@@ -26,51 +26,10 @@
 
     <section>
       <h2 class="logo">Bestiary</h2>
-      <p style="margin-top:12px">There are four demon tiers: Fiends, Lesser Demons, Mid-Demons, and Greater Demons. Each card has a name, description, and image placeholder.</p>
+      <p style="margin-top:12px">There are four demon tiers: Fiends, Lesser Demons, Mid-Demons, and Greater Demons.</p>
 
       <div class="tiers">
         
-  <div class="actions"><button class="add-card" data-tier="\2">+ Add demon</button></div>
-  <div class="cards">
-    <div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-  </div>
-</section>
-
   <div class="actions"><button class="add-card" data-tier="\2">+ Add demon</button></div>
   <div class="cards">
     <div class="card">
@@ -129,6 +88,16 @@
     </footer>
   </main>
   <script src="script.js"></script>
+
+        <!-- Actions -->
+<div class="actions">
+  <button class="add-card" data-target="#cards-bestiary">+ Add demon</button>
+</div>
+
+<!-- One grid for all demons -->
+<div class="cards" id="cards-bestiary">
+  <!-- keep any existing cards you want here -->
+</div>
 
 <script>
 /* Elemental Imp: autosave + image handling + "+ Add demon" working */
