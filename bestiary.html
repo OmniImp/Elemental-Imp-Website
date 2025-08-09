@@ -190,10 +190,15 @@
     const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
     return m ? m[2] : ''; // raw URL/dataURL only
   }
-  function setBoxImage(box, src){
+ function setBoxImage(box, src){
     if(!src) return;
     box.style.backgroundImage = `url(${src})`;
     box.classList.add('has-img');
+
+    // Remove placeholder text, keep the file input
+    const fileInput = box.querySelector('input[type="file"]');
+    box.textContent = ''; // clears any text like "Image Placeholder"
+    if (fileInput) box.appendChild(fileInput);
   }
 
   // --- collect current state ---
