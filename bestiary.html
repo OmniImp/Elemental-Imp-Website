@@ -26,51 +26,10 @@
 
     <section>
       <h2 class="logo">Bestiary</h2>
-      <p style="margin-top:12px">Four demon tiers. Each card has a name, description, and image placeholder.</p>
+      <p style="margin-top:12px">There are four demon tiers: Fiends, Lesser Demons, Mid-Demons, and Greater Demons. Each card has a name, description, and image placeholder.</p>
 
       <div class="tiers">
         
-  <div class="actions"><button class="add-card" data-tier="\2">+ Add demon</button></div>
-  <div class="cards">
-    <div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-<div class="card">
-  <button class="remove-card" title="Remove this card">×</button>
-  <div class="image" title="Click to upload or drop an image" data-src="">Image<input type="file" accept="image/*"></div>
-  <div class="name" contenteditable="true">Name</div>
-  <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-</div>
-  </div>
-</section>
-
   <div class="actions"><button class="add-card" data-tier="\2">+ Add demon</button></div>
   <div class="cards">
     <div class="card">
@@ -308,6 +267,104 @@
       };
       r.readAsText(file);
     });
+    // --- Bestiary: +Add demon (clone template), remove, and wire image uploads ---
+(function () {
+  // Find the <template> (fallback creates one if missing)
+  let template = document.getElementById('card-template');
+  if (!template) {
+    template = document.createElement('template');
+    template.id = 'card-template';
+    template.innerHTML = `
+      <div class="card">
+        <button class="remove-card" title="Remove this card">×</button>
+        <div class="image" title="Click to upload or drop an image">Image
+          <input type="file" accept="image/*">
+        </div>
+        <div class="name" contenteditable="true">Name</div>
+        <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
+      </div>`;
+    document.body.appendChild(template);
+  }
+
+  // Wire up a freshly created card (remove button + image input + drag/drop)
+  function wireCard(card) {
+    // remove
+    const rm = card.querySelector('.remove-card');
+    rm?.addEventListener('click', () => {
+      card.remove();
+      // trigger autosave if you have it
+      if (typeof autosave === 'function') autosave();
+    });
+
+    // uploads
+    const box = card.querySelector('.image');
+    const input = box?.querySelector('input[type="file"]');
+    if (input) {
+      input.addEventListener('change', async (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) return;
+        // Uses your existing helpers
+        const dataURL = await fileToDataURL(f);
+        setBoxImage(box, dataURL);
+        if (typeof autosave === 'function') autosave();
+      });
+      ['dragenter','dragover'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
+      ['dragleave','drop'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.style.boxShadow=''; }));
+      box.addEventListener('drop', async (e) => {
+        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (!f) return;
+        const dataURL = await fileToDataURL(f);
+        setBoxImage(box, dataURL);
+        if (typeof autosave === 'function') autosave();
+      });
+    }
+
+    // text autosave hooks (matches what you do on page load)
+    card.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.addEventListener('input', autosave);
+      el.addEventListener('blur', autosave);
+    });
+  }
+
+  // Click handler for existing + future "+ Add demon" buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add-card');
+    if (!btn) return;
+
+    // Find the correct .cards grid to append to
+    // Prefer the nearest .tier, else fall back to the closest section, else the last .cards before the button
+    let container = btn.closest('.tier')?.querySelector('.cards')
+                 || btn.closest('section')?.querySelector('.cards');
+
+    // Fallback: search upwards then previous siblings
+    if (!container) {
+      const allCards = Array.from(document.querySelectorAll('.cards'));
+      container = allCards.reverse().find(c => c.compareDocumentPosition(btn) & Node.DOCUMENT_POSITION_FOLLOWING);
+    }
+
+    // If still not found, make a .cards grid right after the button
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'cards';
+      btn.insertAdjacentElement('afterend', container);
+    }
+
+    // Clone template and wire it up
+    const card = template.content.firstElementChild.cloneNode(true);
+    wireCard(card);
+    container.appendChild(card);
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    if (typeof autosave === 'function') autosave();
+  });
+
+  // Ensure existing cards have working remove/upload (in case they weren’t wired yet)
+  document.querySelectorAll('.cards .card').forEach(card => {
+    // Only wire once
+    if (!card.dataset.wired) {
+      card.dataset.wired = '1';
+      wireCard(card);
+    }
   });
 })();
 </script>
