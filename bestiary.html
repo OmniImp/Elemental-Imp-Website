@@ -130,66 +130,96 @@
   </main>
   <script src="script.js"></script>
 
-  <script>
-/* Elemental Imp: Per-page autosave (fixed image save/restore) */
+<script>
+/* Elemental Imp: autosave + image handling + "+ Add demon" working */
 (function () {
   const here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   const KEY = 'elementalImp:' + here;
 
-  // --- helpers ---
+  // ---------- helpers ----------
   function $(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
   function setStatus(msg){ const s = document.getElementById('save-status'); if (s) s.textContent = msg; }
-  function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
-  function fileToDataURL(file){ return new Promise(res=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
+  function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
+  function fileToDataURL(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
 
-  // NEW: parse/set background-image safely
+  // Extract only the inner URL from background-image
   function getBoxImage(box){
     const bg = (box.style && box.style.backgroundImage) || '';
-    // Expect formats like: url("...") OR url(...) OR possibly multiple layers
     const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
-    return m ? m[2] : ''; // raw URL/dataURL only
+    return m ? m[2] : '';
   }
- function setBoxImage(box, src){
+  // Set background-image and clear placeholder text (keep the file input)
+  function setBoxImage(box, src){
     if(!src) return;
     box.style.backgroundImage = `url(${src})`;
     box.classList.add('has-img');
-
-    // Remove placeholder text, keep the file input
-    const fileInput = box.querySelector('input[type="file"]');
-    box.textContent = ''; // clears any text like "Image Placeholder"
-    if (fileInput) box.appendChild(fileInput);
+    const input = box.querySelector('input[type="file"]');
+    box.textContent = ''; // removes "Image Placeholder" text
+    if (input) box.appendChild(input);
   }
 
-  // --- collect current state ---
-  async function collect() {
+  // ---------- save/load ----------
+  async function collect(){
     const textBlocks = $('[contenteditable="true"]').map(el => el.textContent.trim());
-    const imgBoxes  = $('.image, .img').map(getBoxImage); // raw dataURLs/URLs only
+    const imgBoxes  = $('.image, .img').map(getBoxImage); // raw URLs/dataURLs only
     return { page: here, textBlocks, imgBoxes };
   }
-
-  // --- apply saved state ---
-  function apply(data) {
+  function apply(data){
     if (!data || data.page !== here) return;
-    const textBlocks = $('[contenteditable="true"]');
-    (data.textBlocks || []).forEach((txt, i) => { if (textBlocks[i]) textBlocks[i].textContent = txt || textBlocks[i].textContent; });
+    const texts = $('[contenteditable="true"]');
+    (data.textBlocks || []).forEach((v,i)=> { if (texts[i]) texts[i].textContent = v || texts[i].textContent; });
     const boxes = $('.image, .img');
-    (data.imgBoxes || []).forEach((src, i) => { if (boxes[i] && src) setBoxImage(boxes[i], src); });
+    (data.imgBoxes || []).forEach((src,i)=> { if (boxes[i] && src) setBoxImage(boxes[i], src); });
     setStatus('Loaded');
   }
+  async function saveNow(){ try{ localStorage.setItem(KEY, JSON.stringify(await collect())); setStatus('Saved ✓'); }catch(e){ console.error(e); setStatus('Save failed'); } }
+  function loadNow(){ try{ const raw=localStorage.getItem(KEY); if (!raw) return; apply(JSON.parse(raw)); }catch(e){ console.error(e); } }
+  const autosave = debounce(() => { collect().then(data=>{ try{ localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }catch(e){ console.error(e); setStatus('Save failed'); } }); }, 400);
 
-  async function saveNow(){ try { localStorage.setItem(KEY, JSON.stringify(await collect())); setStatus('Saved ✓'); } catch(e){ console.error(e); setStatus('Save failed'); } }
-  function loadNow(){ try { const raw = localStorage.getItem(KEY); if (!raw) return; apply(JSON.parse(raw)); } catch(e){ console.error(e); } }
-  const autosave = debounce(() => { collect().then(data => { try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); } catch(e){ console.error(e); setStatus('Save failed'); } }); }, 400);
+  // ---------- wire existing UI ----------
+  function wireImageBox(box){
+    const input = box.querySelector('input[type="file"]');
+    if (input && !input.dataset.wired){
+      input.dataset.wired = '1';
+      input.addEventListener('change', async e=>{
+        const f = e.target.files && e.target.files[0]; if(!f) return;
+        setBoxImage(box, await fileToDataURL(f));
+        autosave();
+      });
+    }
+    ['dragenter','dragover'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
+    ['dragleave','drop'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
+    box.addEventListener('drop', async e=>{
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if(!f) return;
+      setBoxImage(box, await fileToDataURL(f));
+      autosave();
+    });
+  }
+  function wireCard(card){
+    if (card.dataset.wired) return;
+    card.dataset.wired = '1';
+    // remove button
+    const rm = card.querySelector('.remove-card');
+    rm && rm.addEventListener('click', ()=>{ card.remove(); autosave(); });
+    // text autosave
+    card.querySelectorAll('[contenteditable="true"]').forEach(el=>{
+      el.addEventListener('input', autosave);
+      el.addEventListener('blur', autosave);
+    });
+    // image box
+    const box = card.querySelector('.image, .img');
+    if (box) wireImageBox(box);
+  }
 
-  // --- wire up page ---
+  // ---------- DOMContentLoaded ----------
   document.addEventListener('DOMContentLoaded', () => {
-    // (optional) highlight current nav
-    document.querySelectorAll('.nav-bar .btn').forEach(a => {
-      if ((a.getAttribute('href') || '').toLowerCase() === here) a.classList.add('active');
+    // highlight current nav
+    document.querySelectorAll('.nav-bar .btn').forEach(a=>{
+      if ((a.getAttribute('href')||'').toLowerCase() === here) a.classList.add('active');
     });
 
-    // controls bar (if you already have it, this is safe to keep or remove)
-    if (!document.querySelector('.controls')) {
+    // create controls if missing
+    if (!document.querySelector('.controls')){
       const controls = document.createElement('div');
       controls.className = 'controls';
       controls.innerHTML = `
@@ -205,167 +235,85 @@
       (h2 && h2.parentElement) ? h2.parentElement.insertBefore(controls, h2.nextSibling) : main.prepend(controls);
     }
 
-    // restore
-    loadNow();
-
-    // autosave text
-    $('[contenteditable="true"]').forEach(el => {
+    // wire existing cards/boxes and text
+    $('.cards .card').forEach(wireCard);
+    $('.image, .img').forEach(wireImageBox);
+    $('[contenteditable="true"]').forEach(el=>{
       el.addEventListener('input', autosave);
       el.addEventListener('blur', autosave);
     });
 
-    // autosave images (file input + drag/drop)
-    $('.image input[type="file"], .img input[type="file"]').forEach(inp => {
-      const box = inp.closest('.image, .img');
-      if (!box) return;
-      inp.addEventListener('change', async e => {
-        const f = e.target.files && e.target.files[0];
-        if (!f) return;
-        const dataURL = await fileToDataURL(f);
-        setBoxImage(box, dataURL);
-        autosave();
-      });
-      ['dragenter','dragover'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
-      ['dragleave','drop'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
-      box.addEventListener('drop', async e => {
-        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        if (!f) return;
-        const dataURL = await fileToDataURL(f);
-        setBoxImage(box, dataURL);
-        autosave();
-      });
-    });
+    // load saved state
+    loadNow();
 
     // controls
     document.getElementById('save-now')?.addEventListener('click', saveNow);
-    document.getElementById('reset-page')?.addEventListener('click', () => {
-      if (confirm('Reset this page and clear saved data?')) {
-        localStorage.removeItem(KEY);
-        location.reload();
-      }
+    document.getElementById('reset-page')?.addEventListener('click', ()=>{
+      if (confirm('Reset this page and clear saved data?')) { localStorage.removeItem(KEY); location.reload(); }
     });
-    document.getElementById('export-json')?.addEventListener('click', async () => {
+    document.getElementById('export-json')?.addEventListener('click', async ()=>{
       const data = await collect();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = (here.replace(/\.html$/,'') || 'page') + '-export.json';
       a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
     });
-    document.getElementById('import-json')?.addEventListener('change', e => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
+    document.getElementById('import-json')?.addEventListener('change', e=>{
+      const f = e.target.files && e.target.files[0]; if(!f) return;
       const r = new FileReader();
-      r.onload = () => {
-        try {
-          const data = JSON.parse(r.result);
-          apply(data);
-          localStorage.setItem(KEY, JSON.stringify(data));
-          setStatus('Imported ✓');
-        } catch (err) { console.error(err); alert('Invalid JSON.'); }
+      r.onload = ()=>{
+        try{ const data = JSON.parse(r.result); apply(data); localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Imported ✓'); }
+        catch(err){ console.error(err); alert('Invalid JSON.'); }
       };
-      r.readAsText(file);
-    });
-    
-    // --- Bestiary: +Add demon (clone template), remove, and wire image uploads ---
-(function () {
-  // Find the <template> (fallback creates one if missing)
-  let template = document.getElementById('card-template');
-  if (!template) {
-    template = document.createElement('template');
-    template.id = 'card-template';
-    template.innerHTML = `
-      <div class="card">
-        <button class="remove-card" title="Remove this card">×</button>
-        <div class="image" title="Click to upload or drop an image">Image
-          <input type="file" accept="image/*">
-        </div>
-        <div class="name" contenteditable="true">Name</div>
-        <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
-      </div>`;
-    document.body.appendChild(template);
-  }
-
-  // Wire up a freshly created card (remove button + image input + drag/drop)
-  function wireCard(card) {
-    // remove
-    const rm = card.querySelector('.remove-card');
-    rm?.addEventListener('click', () => {
-      card.remove();
-      // trigger autosave if you have it
-      if (typeof autosave === 'function') autosave();
+      r.readAsText(f);
     });
 
-    // uploads
-    const box = card.querySelector('.image');
-    const input = box?.querySelector('input[type="file"]');
-    if (input) {
-      input.addEventListener('change', async (e) => {
-        const f = e.target.files && e.target.files[0];
-        if (!f) return;
-        // Uses your existing helpers
-        const dataURL = await fileToDataURL(f);
-        setBoxImage(box, dataURL);
-        if (typeof autosave === 'function') autosave();
-      });
-      ['dragenter','dragover'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
-      ['dragleave','drop'].forEach(ev => box.addEventListener(ev, e => { e.preventDefault(); box.style.boxShadow=''; }));
-      box.addEventListener('drop', async (e) => {
-        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        if (!f) return;
-        const dataURL = await fileToDataURL(f);
-        setBoxImage(box, dataURL);
-        if (typeof autosave === 'function') autosave();
-      });
+    // ---------- "+ Add demon" (works for all tiers) ----------
+    // ensure we have a template
+    let template = document.getElementById('card-template');
+    if (!template){
+      template = document.createElement('template');
+      template.id = 'card-template';
+      template.innerHTML = `
+        <div class="card">
+          <button class="remove-card" title="Remove this card">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="name" contenteditable="true">Name</div>
+          <div class="desc" contenteditable="true">Short description of the demon, traits, and abilities.</div>
+        </div>`;
+      document.body.appendChild(template);
     }
 
-    // text autosave hooks (matches what you do on page load)
-    card.querySelectorAll('[contenteditable="true"]').forEach(el => {
-      el.addEventListener('input', autosave);
-      el.addEventListener('blur', autosave);
-    });
-  }
+    // delegate click for all current/future .add-card buttons
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.add-card');
+      if (!btn) return;
 
-  // Click handler for existing + future "+ Add demon" buttons
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.add-card');
-    if (!btn) return;
+      // find appropriate .cards container near the button
+      let container = btn.closest('.tier')?.querySelector('.cards')
+                   || btn.closest('section')?.querySelector('.cards');
 
-    // Find the correct .cards grid to append to
-    // Prefer the nearest .tier, else fall back to the closest section, else the last .cards before the button
-    let container = btn.closest('.tier')?.querySelector('.cards')
-                 || btn.closest('section')?.querySelector('.cards');
+      // fallback: create a .cards grid right after the button if none exists
+      if (!container){
+        container = document.createElement('div');
+        container.className = 'cards';
+        btn.insertAdjacentElement('afterend', container);
+      }
 
-    // Fallback: search upwards then previous siblings
-    if (!container) {
-      const allCards = Array.from(document.querySelectorAll('.cards'));
-      container = allCards.reverse().find(c => c.compareDocumentPosition(btn) & Node.DOCUMENT_POSITION_FOLLOWING);
-    }
-
-    // If still not found, make a .cards grid right after the button
-    if (!container) {
-      container = document.createElement('div');
-      container.className = 'cards';
-      btn.insertAdjacentElement('afterend', container);
-    }
-
-    // Clone template and wire it up
-    const card = template.content.firstElementChild.cloneNode(true);
-    wireCard(card);
-    container.appendChild(card);
-    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    if (typeof autosave === 'function') autosave();
-  });
-
-  // Ensure existing cards have working remove/upload (in case they weren’t wired yet)
-  document.querySelectorAll('.cards .card').forEach(card => {
-    // Only wire once
-    if (!card.dataset.wired) {
-      card.dataset.wired = '1';
+      // clone a new card and wire it
+      const card = template.content.firstElementChild.cloneNode(true);
       wireCard(card);
-    }
+      container.appendChild(card);
+      card.scrollIntoView({behavior:'smooth', block:'center'});
+      autosave();
+    });
+
+    // in case some existing cards were not wired yet
+    $('.cards .card').forEach(wireCard);
   });
 })();
 </script>
