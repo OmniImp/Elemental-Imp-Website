@@ -83,5 +83,140 @@
     </footer>
   </main>
   <script src="script.js"></script>
+  <script>
+/* Elemental Imp: Per-page autosave (fixed image save/restore) */
+(function () {
+  const here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  const KEY = 'elementalImp:' + here;
+
+  // --- helpers ---
+  function $(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
+  function setStatus(msg){ const s = document.getElementById('save-status'); if (s) s.textContent = msg; }
+  function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
+  function fileToDataURL(file){ return new Promise(res=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
+
+  // NEW: parse/set background-image safely
+  function getBoxImage(box){
+    const bg = (box.style && box.style.backgroundImage) || '';
+    // Expect formats like: url("...") OR url(...) OR possibly multiple layers
+    const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
+    return m ? m[2] : ''; // raw URL/dataURL only
+  }
+  function setBoxImage(box, src){
+    if(!src) return;
+    box.style.backgroundImage = `url(${src})`;
+    box.classList.add('has-img');
+  }
+
+  // --- collect current state ---
+  async function collect() {
+    const textBlocks = $('[contenteditable="true"]').map(el => el.textContent.trim());
+    const imgBoxes  = $('.image, .img').map(getBoxImage); // raw dataURLs/URLs only
+    return { page: here, textBlocks, imgBoxes };
+  }
+
+  // --- apply saved state ---
+  function apply(data) {
+    if (!data || data.page !== here) return;
+    const textBlocks = $('[contenteditable="true"]');
+    (data.textBlocks || []).forEach((txt, i) => { if (textBlocks[i]) textBlocks[i].textContent = txt || textBlocks[i].textContent; });
+    const boxes = $('.image, .img');
+    (data.imgBoxes || []).forEach((src, i) => { if (boxes[i] && src) setBoxImage(boxes[i], src); });
+    setStatus('Loaded');
+  }
+
+  async function saveNow(){ try { localStorage.setItem(KEY, JSON.stringify(await collect())); setStatus('Saved ✓'); } catch(e){ console.error(e); setStatus('Save failed'); } }
+  function loadNow(){ try { const raw = localStorage.getItem(KEY); if (!raw) return; apply(JSON.parse(raw)); } catch(e){ console.error(e); } }
+  const autosave = debounce(() => { collect().then(data => { try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); } catch(e){ console.error(e); setStatus('Save failed'); } }); }, 400);
+
+  // --- wire up page ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // (optional) highlight current nav
+    document.querySelectorAll('.nav-bar .btn').forEach(a => {
+      if ((a.getAttribute('href') || '').toLowerCase() === here) a.classList.add('active');
+    });
+
+    // controls bar (if you already have it, this is safe to keep or remove)
+    if (!document.querySelector('.controls')) {
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      controls.innerHTML = `
+        <button class="btn" id="save-now">Save Now</button>
+        <button class="btn" id="export-json">Export JSON</button>
+        <label class="btn" for="import-json">Import JSON</label>
+        <input id="import-json" type="file" accept="application/json" style="display:none">
+        <button class="btn" id="reset-page">Reset</button>
+        <span class="status-chip" id="save-status" aria-live="polite"></span>
+      `;
+      const main = document.querySelector('main') || document.body;
+      const h2 = main.querySelector('section h2');
+      (h2 && h2.parentElement) ? h2.parentElement.insertBefore(controls, h2.nextSibling) : main.prepend(controls);
+    }
+
+    // restore
+    loadNow();
+
+    // autosave text
+    $('[contenteditable="true"]').forEach(el => {
+      el.addEventListener('input', autosave);
+      el.addEventListener('blur', autosave);
+    });
+
+    // autosave images (file input + drag/drop)
+    $('.image input[type="file"], .img input[type="file"]').forEach(inp => {
+      const box = inp.closest('.image, .img');
+      if (!box) return;
+      inp.addEventListener('change', async e => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) return;
+        const dataURL = await fileToDataURL(f);
+        setBoxImage(box, dataURL);
+        autosave();
+      });
+      ['dragenter','dragover'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
+      ['dragleave','drop'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
+      box.addEventListener('drop', async e => {
+        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (!f) return;
+        const dataURL = await fileToDataURL(f);
+        setBoxImage(box, dataURL);
+        autosave();
+      });
+    });
+
+    // controls
+    document.getElementById('save-now')?.addEventListener('click', saveNow);
+    document.getElementById('reset-page')?.addEventListener('click', () => {
+      if (confirm('Reset this page and clear saved data?')) {
+        localStorage.removeItem(KEY);
+        location.reload();
+      }
+    });
+    document.getElementById('export-json')?.addEventListener('click', async () => {
+      const data = await collect();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (here.replace(/\.html$/,'') || 'page') + '-export.json';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
+    document.getElementById('import-json')?.addEventListener('change', e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try {
+          const data = JSON.parse(r.result);
+          apply(data);
+          localStorage.setItem(KEY, JSON.stringify(data));
+          setStatus('Imported ✓');
+        } catch (err) { console.error(err); alert('Invalid JSON.'); }
+      };
+      r.readAsText(file);
+    });
+  });
+})();
+</script>
 </body>
 </html>
