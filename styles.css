@@ -1,0 +1,93 @@
+
+/* styles.css - Elemental Imp common styling (firey theme) */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root{
+  --bg1: #0b0202;
+  --bg2: #2a0000;
+  --accent1: #ff4500;
+  --accent2: #ffb84d;
+  --glow: 0 0 18px rgba(255,69,0,0.85);
+  --card: rgba(255,255,255,0.03);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background: radial-gradient(circle at 50% 10%, rgba(255,69,0,0.05), transparent 20%), linear-gradient(180deg,var(--bg1),var(--bg2));
+  color:#ffd9a6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.4;
+  padding-bottom:40px;
+}
+
+/* Utilities */
+.container{max-width:1100px;margin:0 auto;padding:24px}
+.center{text-align:center}
+
+/* Header / Hero */
+.header{
+  padding:48px 0 32px;
+  position:relative;
+}
+.logo{
+  font-family: 'Press Start 2P', monospace;
+  font-size:40px;
+  color:var(--accent2);
+  text-shadow: 0 2px 0 #4b0000, 0 0 18px rgba(255,160,50,0.35);
+  letter-spacing:2px;
+}
+.tag{margin-top:12px;color:#ffddaa;opacity:0.95;font-weight:700}
+
+/* Flame overlay */
+.flame{
+  position:fixed;left:0;right:0;top:0;height:220px;pointer-events:none;mix-blend-mode:screen;
+  background-image: url('assets/flame-animated.png');
+  background-repeat:repeat-x;
+  opacity:0.85;
+  transform:translateZ(0);
+}
+
+/* CTA */
+.cta{
+  margin:28px 0;
+}
+.btn{
+  display:inline-block;padding:14px 28px;border-radius:8px;background:linear-gradient(90deg,var(--accent1),#ff8a00);
+  color:#1b0101;text-decoration:none;font-weight:700;box-shadow:var(--glow);
+  border:2px solid rgba(0,0,0,0.35);
+}
+.btn:hover{transform:translateY(-3px);filter:brightness(1.05)}
+
+/* Features */
+.features{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:24px}
+.feature-card{background:var(--card);padding:18px;border-radius:10px;border:1px solid rgba(255,100,10,0.06)}
+.feature-card h4{font-family:'Press Start 2P',monospace;color:var(--accent2);font-size:14px;margin-bottom:6px}
+.feature-card p{font-size:13px;color:#ffd7b3}
+
+/* Progression */
+.progressions{margin-top:26px;background:linear-gradient(180deg, rgba(0,0,0,0.15), transparent);padding:12px;border-radius:8px}
+.levels{display:flex;gap:12px;justify-content:space-between;margin-top:8px}
+.level{flex:1;background:rgba(0,0,0,0.25);padding:18px;border-radius:6px;text-align:center;border:1px solid rgba(255,120,30,0.06)}
+.level h5{font-family:'Press Start 2P',monospace;margin-bottom:8px;color:var(--accent2);font-size:13px}
+
+/* Bestiary preview */
+.bestiary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.enemy{background:rgba(0,0,0,0.28);padding:12px;border-radius:8px;text-align:center;border:1px solid rgba(255,100,10,0.04)}
+.enemy img{width:90px;height:90px;image-rendering:pixelated;margin:auto;display:block}
+
+/* Media */
+.media{margin-top:18px;display:flex;gap:12px;align-items:center}
+.screenshot{flex:1;border-radius:8px;overflow:hidden;border:2px solid rgba(255,140,50,0.08);background:#180202;padding:6px}
+
+/* Footer */
+.footer{margin-top:36px;padding:24px;border-top:1px dashed rgba(255,120,30,0.06);text-align:center;color:#ffddb2}
+
+/* Responsive */
+@media (max-width:800px){
+  .features{grid-template-columns:1fr}
+  .bestiary{grid-template-columns:repeat(2,1fr)}
+  .logo{font-size:26px}
+}
