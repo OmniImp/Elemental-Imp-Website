@@ -91,3 +91,98 @@ body{
   .bestiary{grid-template-columns:repeat(2,1fr)}
   .logo{font-size:26px}
 }
+
+/* --- Hellfire Navigation & Card Enhancements --- */
+.nav-bar{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 16px}
+.nav-bar .btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:10px 14px;border-radius:10px;
+  background: linear-gradient(180deg, rgba(255,140,0,0.12), rgba(255,69,0,0.08));
+  border:1px solid rgba(255,120,30,0.28);
+  color:var(--accent2); text-decoration:none; letter-spacing:.5px;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .2s ease;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+.nav-bar .btn:hover{
+  transform: translateY(-1px);
+  box-shadow: var(--glow);
+  border-color: rgba(255,160,70,0.55);
+  background: radial-gradient(circle at 50% 30%, rgba(255,140,0,0.22), rgba(255,69,0,0.10));
+}
+.nav-bar .btn:active{
+  transform: translateY(0);
+  background: radial-gradient(circle at 50% 70%, rgba(255,69,0,0.30), rgba(255,69,0,0.12));
+  box-shadow: 0 0 22px rgba(255,69,0,0.65) inset, 0 0 14px rgba(255,80,20,0.55);
+}
+
+/* Levels of Hell layout */
+.levels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px}
+.level-card{
+  background: var(--card); border:1px solid rgba(255,120,30,0.18); border-radius:14px; padding:14px;
+  backdrop-filter: blur(6px);
+}
+.level-card h3{color:var(--accent2); margin-bottom:8px}
+.level-card .img{aspect-ratio:16/9;background:#180202;border:1px dashed rgba(255,120,30,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#ffddb2;margin-top:10px}
+
+/* Bestiary tiers & cards */
+.tiers{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.tier{border:1px solid rgba(255,120,30,0.20); border-radius:16px; padding:14px; background:linear-gradient(180deg, rgba(255,69,0,0.04), rgba(255,140,0,0.02))}
+.tier h3{color:var(--accent2);margin-bottom:8px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{
+  background: var(--card); border:1px solid rgba(255,120,30,0.18); border-radius:14px; padding:12px;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.card:hover{transform:translateY(-2px); box-shadow: var(--glow)}
+.card .image{aspect-ratio:1/1; background:#180202; border:1px dashed rgba(255,120,30,0.25); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#ffddb2; margin-bottom:8px}
+.card .name{font-weight:bold;color:#ffcf99;margin-bottom:6px}
+.card .desc{color:#ffddb2; font-size:0.95rem}
+
+/* Responsive tweaks */
+@media (max-width:1100px){
+  .levels-grid{grid-template-columns:repeat(2,1fr)}
+  .cards{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .levels-grid{grid-template-columns:1fr}
+  .tiers{grid-template-columns:1fr}
+  .cards{grid-template-columns:1fr}
+}
+
+/* --- Nav active/hellfire states & UI controls --- */
+.nav-bar .btn.active{
+  border-color: rgba(255,190,120,0.65);
+  box-shadow: 0 0 20px rgba(255,80,20,0.65), inset 0 0 12px rgba(255,80,20,0.25);
+  color:#fff7e6;
+}
+.nav-bar .btn:focus-visible{
+  outline:2px solid rgba(255,200,120,0.9);
+  outline-offset:2px;
+  box-shadow: var(--glow);
+}
+
+/* Add/Remove buttons */
+.actions{display:flex;gap:10px;align-items:center;margin:10px 0}
+.add-card, .remove-card{
+  cursor:pointer; border:1px solid rgba(255,120,30,0.35); background:rgba(255,69,0,0.08);
+  padding:8px 12px; border-radius:10px; color:var(--accent2);
+  transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
+}
+.add-card:hover, .remove-card:hover{ box-shadow: var(--glow); transform: translateY(-1px) }
+.add-card:active, .remove-card:active{ transform: translateY(0) }
+
+.card{ position:relative }
+.card .remove-card{
+  position:absolute; top:8px; right:8px; padding:4px 8px; font-size:.9rem;
+}
+
+/* Uploadable image placeholder */
+.card .image, .level-card .img{
+  position:relative; overflow:hidden; background-size:cover; background-position:center;
+}
+.card .image input[type="file"], .level-card .img input[type="file"]{
+  position:absolute; inset:0; opacity:0; cursor:pointer;
+}
+.card .image.has-img, .level-card .img.has-img{
+  border-style:solid; border-color: rgba(255,180,120,0.35);
+}
