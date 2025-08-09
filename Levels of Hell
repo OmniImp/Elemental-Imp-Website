@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levels of Hell - Elemental Imp</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #1a0000;
+            color: #fff5e1;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: linear-gradient(to right, #ff4500, #8b0000);
+            padding: 20px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px black;
+        }
+        .level {
+            max-width: 900px;
+            margin: 40px auto;
+            background: rgba(50, 0, 0, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.8);
+        }
+        .level img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .level-content {
+            padding: 20px;
+        }
+        .level-content h2 {
+            color: #ff6347;
+            margin-top: 0;
+        }
+        .level-content p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<header>🔥 9 Levels of Hell 🔥</header>
+
+<main>
+    <!-- Repeat this block for each level -->
+    <section class="level">
+        <img src="images/level1.jpg" alt="Level 1 Image">
+        <div class="level-content">
+            <h2>Level 1: Fiend's Gate</h2>
+            <p>Description of Level 1 goes here. Add atmosphere, lore, and gameplay details.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level2.jpg" alt="Level 2 Image">
+        <div class="level-content">
+            <h2>Level 2: The Burning Dunes</h2>
+            <p>Description of Level 2 goes here.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level3.jpg" alt="Level 3 Image">
+        <div class="level-content">
+            <h2>Level 3: Lava Canyons</h2>
+            <p>Description of Level 3 goes here.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level4.jpg" alt="Level 4 Image">
+        <div class="level-content">
+            <h2>Level 4: Ashen Wastes</h2>
+            <p>Description of Level 4 goes here.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level5.jpg" alt="Level 5 Image">
+        <div class="level-content">
+            <h2>Level 5: Molten Spire</h2>
+            <p>Description of Level 5 goes here.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level6.jpg" alt="Level 6 Image">
+        <div class="level-content">
+            <h2>Level 6: Infernal Chasm</h2>
+            <p>Description of Level 6 goes here.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level7.jpg" alt="Level 7 Image">
+        <div class="level-content">
+            <h2>Level 7: Demon's Crucible</h2>
+            <p>Description of Level 7 goes here.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level8.jpg" alt="Level 8 Image">
+        <div class="level-content">
+            <h2>Level 8: The Blazing Keep</h2>
+            <p>Description of Level 8 goes here.</p>
+        </div>
+    </section>
+
+    <section class="level">
+        <img src="images/level9.jpg" alt="Level 9 Image">
+        <div class="level-content">
+            <h2>Level 9: Throne of the Devil</h2>
+            <p>Description of Level 9 goes here.</p>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
