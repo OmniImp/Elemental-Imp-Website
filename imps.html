@@ -14,7 +14,6 @@
       <div class="tag">The Imp who bends the elements</div>
     </header>
 
-    <!-- Nav (add the Imp link to your other pages too; see step 2) -->
     <nav class="nav-bar">
       <a href="index.html" class="btn">Home</a>
       <a href="features.html" class="btn">Features</a>
@@ -32,13 +31,11 @@
         Use the button below to add new forms, upload art, and write notes.
       </p>
 
-      <!-- One action bar + one large-card grid -->
       <div class="actions">
         <button class="add-card" data-target="#cards-imp">+ Add Imp</button>
       </div>
 
       <div class="cards" id="cards-imp">
-        <!-- Example starting card (you can remove it) -->
         <div class="card">
           <button class="remove-card" title="Remove this form">×</button>
           <div class="image" title="Click to upload or drop an image">
@@ -50,7 +47,6 @@
       </div>
     </section>
 
-    <!-- Template for new Imp forms -->
     <template id="imp-card-template">
       <div class="card">
         <button class="remove-card" title="Remove this form">×</button>
@@ -67,10 +63,8 @@
     </footer>
   </main>
 
-  <!-- Your existing global script with autosave must be included -->
   <script src="script.js"></script>
 
-  <!-- Add-Imp logic (mirrors your +Add demon, targets #cards-imp) -->
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
