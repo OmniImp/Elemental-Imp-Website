@@ -149,14 +149,16 @@
     return m ? m[2] : '';
   }
   // Set background-image and clear placeholder text (keep the file input)
-  function setBoxImage(box, src){
+ function setBoxImage(box, src){
     if(!src) return;
     box.style.backgroundImage = `url(${src})`;
     box.classList.add('has-img');
-    const input = box.querySelector('input[type="file"]');
-    box.textContent = ''; // removes "Image Placeholder" text
-    if (input) box.appendChild(input);
-  }
+
+    // Remove placeholder text, keep the file input
+    const fileInput = box.querySelector('input[type="file"]');
+    box.textContent = ''; // clears any text like "Image Placeholder"
+    if (fileInput) box.appendChild(fileInput);
+}
 
   // ---------- save/load ----------
   async function collect(){
