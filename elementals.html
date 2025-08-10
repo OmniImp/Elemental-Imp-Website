@@ -148,47 +148,117 @@
       }
 
       // helpers from global script (fallbacks)
-      const fileToDataURL = window.fileToDataURL || (f => new Promise(r => { const rd = new FileReader(); rd.onload = () => r(rd.result); rd.readAsDataURL(f); }));
-      const setBoxImage = window.setBoxImage || ((box, src) => {
-        if (!src) return;
-        const input = box.querySelector('input[type="file"]');
-        box.style.backgroundImage = `url(${src})`;
-        box.classList.add('has-img');
-        box.textContent = '';
-        if (input) box.appendChild(input);
+  const fileToDataURL = window.fileToDataURL || (f => new Promise(r => { const rd = new FileReader(); rd.onload = () => r(rd.result); rd.readAsDataURL(f); }));
+  const setBoxImage = window.setBoxImage || ((box, src) => {
+    if (!src) return;
+    const input = box.querySelector('input[type="file"]');
+    box.style.backgroundImage = `url(${src})`;
+    box.classList.add('has-img');
+    box.textContent = '';
+    if (input) box.appendChild(input);
+  });
+  const autosave = window.autosave || (()=>{});
+
+  function wireImageBox(box){
+    const input = box?.querySelector('input[type="file"]');
+    if (input && !input.dataset.wired){
+      input.dataset.wired = '1';
+      input.addEventListener('change', async e=>{
+        const f = e.target.files?.[0]; if(!f) return;
+        setBoxImage(box, await fileToDataURL(f));
+        autosave();
       });
-      const autosave = window.autosave || (()=>{});
-
-      function wireCard(card){
-        card.querySelector('.remove-card')?.addEventListener('click', ()=>{ card.remove(); autosave(); });
-        card.querySelectorAll('[contenteditable="true"]').forEach(el=>{
-          el.addEventListener('input', autosave);
-          el.addEventListener('blur', autosave);
-        });
-        const box = card.querySelector('.image');
-        const input = box?.querySelector('input[type="file"]');
-        if (input){
-          input.addEventListener('change', async e=>{
-            const f = e.target.files?.[0]; if(!f) return;
-            setBoxImage(box, await fileToDataURL(f));
-            autosave();
-          });
-        }
-        ['dragenter','dragover'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
-        ['dragleave','drop'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
-        box?.addEventListener('drop', async e=>{
-          const f = e.dataTransfer?.files?.[0]; if(!f) return;
-          setBoxImage(box, await fileToDataURL(f));
-          autosave();
-        });
-      }
-
-      const card = template.content.firstElementChild.cloneNode(true);
-      wireCard(card);
-      container.appendChild(card);
-      card.scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+    ['dragenter','dragover'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
+    ['dragleave','drop'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
+    box?.addEventListener('drop', async e=>{
+      const f = e.dataTransfer?.files?.[0]; if(!f) return;
+      setBoxImage(box, await fileToDataURL(f));
       autosave();
     });
+  }
+
+  // NEW: badges
+  function wireElementBadges(card){
+    const value = card.querySelector('.element-value'); // hidden, persisted via autosave
+    const badges = card.querySelectorAll('.badges .badge');
+
+    function apply(elKey){
+      // clear previous classes
+      card.classList.remove('el--fire','el--water','el--air','el--earth','el--dark');
+      // set new class
+      if (elKey) card.classList.add('el--' + elKey);
+      // active badge state
+      badges.forEach(b => b.classList.toggle('active', b.dataset.el === elKey));
+      // persist to hidden span (so autosave stores it)
+      if (value) value.textContent = elKey || '';
+      autosave();
+    }
+
+    // initial from saved value (if any)
+    const initial = (value?.textContent || '').trim();
+    if (initial) apply(initial);
+
+    badges.forEach(b => b.addEventListener('click', () => apply(b.dataset.el)));
+  }
+
+  function wireCard(card){
+    if (card.dataset.wired) return;
+    card.dataset.wired = '1';
+
+    card.querySelector('.remove-card')?.addEventListener('click', ()=>{ card.remove(); autosave(); });
+    card.querySelectorAll('[contenteditable="true"]').forEach(el=>{
+      el.addEventListener('input', autosave);
+      el.addEventListener('blur', autosave);
+    });
+
+    wireImageBox(card.querySelector('.image'));
+    wireElementBadges(card);
+  }
+
+  // +Add Elemental
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add-card');
+    if (!btn) return;
+
+    let container = document.querySelector(btn.dataset.target || '#cards-elementals');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'cards';
+      container.id = 'cards-elementals';
+      btn.insertAdjacentElement('afterend', container);
+    }
+
+    let template = document.getElementById('elemental-card-template');
+    if (!template) {
+      template = document.createElement('template');
+      template.id = 'elemental-card-template';
+      template.innerHTML = `
+        <div class="card">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="badges" role="group" aria-label="Element">
+            <button class="badge" data-el="fire">Fire</button>
+            <button class="badge" data-el="water">Water</button>
+            <button class="badge" data-el="air">Air</button>
+            <button class="badge" data-el="earth">Earth</button>
+            <button class="badge" data-el="dark">Darkness</button>
+          </div>
+          <span class="element-value" contenteditable="true" style="display:none;">fire</span>
+          <div class="name" contenteditable="true">Elemental Name</div>
+          <div class="desc" contenteditable="true">Element: (Fire/Water/Air/Earth/Darkness) — description...</div>
+        </div>`;
+      document.body.appendChild(template);
+    }
+
+    const card = template.content.firstElementChild.cloneNode(true);
+    wireCard(card);
+    container.appendChild(card);
+    card.scrollIntoView({ behavior:'smooth', block:'center' });
+    autosave();
+  });
 
     // Wire starters (so uploads & remove work immediately)
     document.querySelectorAll('#cards-elementals .card').forEach(card => {
