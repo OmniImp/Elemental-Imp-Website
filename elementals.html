@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Elemental Imp - Elementals</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .badges { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 6px; }
+    .badge {
+      cursor:pointer; user-select:none;
+      border:1px solid rgba(255,120,30,0.28);
+      padding:6px 10px; border-radius:999px;
+      font-size:.9rem; letter-spacing:.2px; text-decoration:none;
+      background:linear-gradient(180deg, rgba(255,140,0,0.12), rgba(255,69,0,0.08));
+      color:var(--accent2);
+      transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .2s ease;
+    }
+    .badge:hover { transform: translateY(-1px); box-shadow: var(--glow); }
+    .badge.active { border-color: rgba(255,190,120,0.65); color:#fff7e6; box-shadow: 0 0 12px rgba(255,120,40,.6) inset; }
+    .card.el--fire    { box-shadow: 0 0 22px rgba(255, 80, 20, .35); }
+    .card.el--water   { box-shadow: 0 0 22px rgba( 80,160,255, .30); }
+    .card.el--air     { box-shadow: 0 0 22px rgba(180,220,255, .28); }
+    .card.el--earth   { box-shadow: 0 0 22px rgba(120, 85, 40, .35); }
+    .card.el--dark    { box-shadow: 0 0 22px rgba( 40, 10, 60, .40); }
+    .card.el--fire  .image   { border-color: rgba(255,120,40,.45); }
+    .card.el--water .image   { border-color: rgba(80,160,255,.45); }
+    .card.el--air   .image   { border-color: rgba(180,220,255,.45); }
+    .card.el--earth .image   { border-color: rgba(120, 85, 40,.45); }
+    .card.el--dark  .image   { border-color: rgba( 60, 20, 90,.50); }
+    .cards { display:grid; gap:12px; grid-template-columns:repeat(3, minmax(0,1fr)); }
+    .card { padding:16px; }
+    .card .image { aspect-ratio:16/9; }
+    @media (max-width:1100px){ .cards { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:700px){ .cards { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="flame" aria-hidden="true"></div>
+  <main class="container">
+    <header class="header center">
+      <div class="logo">🔥 ELEMENTAL IMP 🔥</div>
+      <div class="tag">The raw forces: Fire • Water • Air • Earth • Darkness</div>
+    </header>
+
+    <nav class="nav-bar">
+      <a href="index.html" class="btn">Home</a>
+      <a href="features.html" class="btn">Features</a>
+      <a href="levels-of-hell.html" class="btn">Levels of Hell</a>
+      <a href="bestiary.html" class="btn">Bestiary</a>
+      <a href="imp.html" class="btn">Imp</a>
+      <a href="elementals.html" class="btn">Elementals</a>
+      <a href="media.html" class="btn">Media</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
+
+    <section>
+      <h2 class="logo">Elementals</h2>
+      <p style="margin-top:12px">
+        Create entries for the five elemental forces: <strong>Fire, Water, Air, Earth, Darkness</strong>.
+        Upload art and write abilities, behaviors, and lore.
+      </p>
+
+      <div class="controls">
+        <button class="btn" id="save-now">Save Now</button>
+        <button class="btn" id="export-json">Export JSON</button>
+        <label class="btn" for="import-json">Import JSON</label>
+        <input id="import-json" type="file" accept="application/json" style="display:none">
+        <button class="btn" id="reset-page">Reset</button>
+        <span class="status-chip" id="save-status" aria-live="polite"></span>
+      </div>
+
+      <div class="actions">
+        <button class="add-card" data-target="#cards-elementals">+ Add Elemental</button>
+      </div>
+
+      <div class="cards" id="cards-elementals">
+        <div class="card el--fire">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="badges" role="group" aria-label="Element">
+            <button class="badge active" data-el="fire">Fire</button>
+            <button class="badge" data-el="water">Water</button>
+            <button class="badge" data-el="air">Air</button>
+            <button class="badge" data-el="earth">Earth</button>
+            <button class="badge" data-el="dark">Darkness</button>
+          </div>
+          <span class="element-value" contenteditable="true" style="display:none;">fire</span>
+          <div class="name" contenteditable="true">Fire Elemental</div>
+          <div class="desc" contenteditable="true">Inferno-wreathed spirit. Strengths: burn/DoT, area denial. Weaknesses: water, cold.</div>
+        </div>
+
+        <div class="card el--water">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="badges" role="group" aria-label="Element">
+            <button class="badge" data-el="fire">Fire</button>
+            <button class="badge active" data-el="water">Water</button>
+            <button class="badge" data-el="air">Air</button>
+            <button class="badge" data-el="earth">Earth</button>
+            <button class="badge" data-el="dark">Darkness</button>
+          </div>
+          <span class="element-value" contenteditable="true" style="display:none;">water</span>
+          <div class="name" contenteditable="true">Water Elemental</div>
+          <div class="desc" contenteditable="true">Shape-shifting tide. Strengths: crowd control, flow. Weaknesses: lightning, freeze.</div>
+        </div>
+
+        <div class="card el--air">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="badges" role="group" aria-label="Element">
+            <button class="badge" data-el="fire">Fire</button>
+            <button class="badge" data-el="water">Water</button>
+            <button class="badge active" data-el="air">Air</button>
+            <button class="badge" data-el="earth">Earth</button>
+            <button class="badge" data-el="dark">Darkness</button>
+          </div>
+          <span class="element-value" contenteditable="true" style="display:none;">air</span>
+          <div class="name" contenteditable="true">Air Elemental</div>
+          <div class="desc" contenteditable="true">Razor wind and cyclone. Strengths: speed, knockback. Weaknesses: earth, grounding.</div>
+        </div>
+
+        <div class="card el--earth">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="badges" role="group" aria-label="Element">
+            <button class="badge" data-el="fire">Fire</button>
+            <button class="badge" data-el="water">Water</button>
+            <button class="badge" data-el="air">Air</button>
+            <button class="badge active" data-el="earth">Earth</button>
+            <button class="badge" data-el="dark">Darkness</button>
+          </div>
+          <span class="element-value" contenteditable="true" style="display:none;">earth</span>
+          <div class="name" contenteditable="true">Earth Elemental</div>
+          <div class="desc" contenteditable="true">Stone and soil titan. Strengths: defense, stuns. Weaknesses: air, erosion.</div>
+        </div>
+
+        <div class="card el--dark">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="badges" role="group" aria-label="Element">
+            <button class="badge" data-el="fire">Fire</button>
+            <button class="badge" data-el="water">Water</button>
+            <button class="badge" data-el="air">Air</button>
+            <button class="badge" data-el="earth">Earth</button>
+            <button class="badge active" data-el="dark">Darkness</button>
+          </div>
+          <span class="element-value" contenteditable="true" style="display:none;">dark</span>
+          <div class="name" contenteditable="true">Darkness Elemental</div>
+          <div class="desc" contenteditable="true">Shadowed malice. Strengths: debuffs, concealment. Weaknesses: radiant/holy effects.</div>
+        </div>
+      </div>
+    </section>
+
+    <template id="elemental-card-template">
+      <div class="card">
+        <button class="remove-card" title="Remove">×</button>
+        <div class="image" title="Click to upload or drop an image">
+          Image <input type="file" accept="image/*">
+        </div>
+        <div class="badges" role="group" aria-label="Element">
+          <button class="badge active" data-el="fire">Fire</button>
+          <button class="badge" data-el="water">Water</button>
+          <button class="badge" data-el="air">Air</button>
+          <button class="badge" data-el="earth">Earth</button>
+          <button class="badge" data-el="dark">Darkness</button>
+        </div>
+        <span class="element-value" contenteditable="true" style="display:none;">fire</span>
+        <div class="name" contenteditable="true">Elemental Name</div>
+        <div class="desc" contenteditable="true">Element: (Fire/Water/Air/Earth/Darkness) — description...</div>
+      </div>
+    </template>
+
+    <footer class="footer">
+      <div>Follow: Discord • Twitter • Steam • itch.io</div>
+    </footer>
+  </main>
+
+  <script>
+  (function(){
+    const here = (location.pathname.split('/').pop() || 'elementals.html').toLowerCase();
+    const KEY = 'elementalImp:' + here;
+
+    function $(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
+    function setStatus(msg){ const s = document.getElementById('save-status'); if (s) s.textContent = msg; }
+    function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
+    function fileToDataURL(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
+
+    function getBoxImage(box){
+      const bg = (box.style && box.style.backgroundImage) || '';
+      const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
+      return m ? m[2] : '';
+    }
+    function setBoxImage(box, src){
+      if(!src) return;
+      const input = box.querySelector('input[type="file"]');
+      box.style.backgroundImage = `url(${src})`;
+      box.classList.add('has-img');
+      box.textContent = '';
+      if (input) box.appendChild(input);
+    }
+
+    function wireImageBox(box){
+      const input = box?.querySelector('input[type="file"]');
+      if (input && !input.dataset.wired){
+        input.dataset.wired = '1';
+        input.addEventListener('change', async e=>{
+          const f = e.target.files?.[0]; if(!f) return;
+          setBoxImage(box, await fileToDataURL(f));
+          autosave();
+        });
+      }
+      ['dragenter','dragover'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
+      ['dragleave','drop'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
+      box?.addEventListener('drop', async e=>{
+        const f = e.dataTransfer?.files?.[0]; if(!f) return;
+        setBoxImage(box, await fileToDataURL(f));
+        autosave();
+      });
+    }
+
+    function wireBadges(card){
+      const value = card.querySelector('.element-value');
+      const badges = card.querySelectorAll('.badges .badge');
+      function apply(elKey){
+        card.classList.remove('el--fire','el--water','el--air','el--earth','el--dark');
+        if (elKey) card.classList.add('el--' + elKey);
+        badges.forEach(b => b.classList.toggle('active', b.dataset.el === elKey));
+        if (value) value.textContent = elKey || '';
+        autosave();
+      }
+      const initial = (value?.textContent || '').trim();
+      if (initial) apply(initial);
+      badges.forEach(b => b.addEventListener('click', () => apply(b.dataset.el)));
+    }
+
+    function wireCard(card){
+      if (card.dataset.wired) return;
+      card.dataset.wired = '1';
+      card.querySelector('.remove-card')?.addEventListener('click', ()=>{ card.remove(); autosave(); });
+      card.querySelectorAll('[contenteditable="true"]').forEach(el=>{
+        el.addEventListener('input', autosave);
+        el.addEventListener('blur', autosave);
+      });
+      wireImageBox(card.querySelector('.image'));
+      wireBadges(card);
+    }
+
+    async function collect(){
+      const cards = $('#cards-elementals .card').map(card => ({
+        name: (card.querySelector('.name')?.textContent || '').trim(),
+        desc: (card.querySelector('.desc')?.textContent || '').trim(),
+        img: getBoxImage(card.querySelector('.image') || {}),
+        element: (card.querySelector('.element-value')?.textContent || '').trim()
+      }));
+      return { page: here, cards };
+    }
+
+    function apply(data){
+      if (!data || data.page !== here) return;
+      const wrap = document.getElementById('cards-elementals');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      let template = document.getElementById('elemental-card-template');
+      if (!template){
+        template = document.createElement('template');
+        template.id = 'elemental-card-template';
+        template.innerHTML = document.getElementById('elemental-card-template').innerHTML;
+        document.body.appendChild(template);
+      }
+      (data.cards || []).forEach(c => {
+        const card = template.content.firstElementChild.cloneNode(true);
+        card.querySelector('.name').textContent = c.name || 'Elemental Name';
+        card.querySelector('.desc').textContent = c.desc || 'Element: ...';
+        if (c.element){
+          card.querySelector('.element-value').textContent = c.element;
+        }
+        const box = card.querySelector('.image');
+        if (c.img){
+          setBoxImage(box, c.img);
+        }
+        wireCard(card);
+        wrap.appendChild(card);
+      });
+      setStatus('Loaded');
+    }
+
+    async function saveNow(){ try{ localStorage.setItem(KEY, JSON.stringify(await collect())); setStatus('Saved ✓'); }catch(e){ console.error(e); setStatus('Save failed'); } }
+    function loadNow(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        apply(data);
+        return true;
+      }catch(e){ console.error(e); return False; }
+    }
+    const autosave = debounce(() => { collect().then(data => {
+      try{ localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }
+      catch(e){ console.error(e); setStatus('Save failed'); }
+    }); }, 400);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav-bar .btn').forEach(a=>{
+        if((a.getAttribute('href')||'').toLowerCase()==='elementals.html') a.classList.add('active');
+      });
+
+      const hadSaved = loadNow();
+      if (!hadSaved){
+        document.querySelectorAll('#cards-elementals .card').forEach(wireCard);
+      }
+
+      document.getElementById('save-now')?.addEventListener('click', saveNow);
+      document.getElementById('reset-page')?.addEventListener('click', ()=>{
+        if (confirm('Reset this page and clear saved data?')){
+          localStorage.removeItem(KEY); location.reload();
+        }
+      });
+      document.getElementById('export-json')?.addEventListener('click', async ()=>{
+        const data = await collect();
+        const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'elementals-export.json';
+        a.click();
+        setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+      });
+      document.getElementById('import-json')?.addEventListener('change', e=>{
+        const f = e.target.files?.[0]; if(!f) return;
+        const r = new FileReader();
+        r.onload = ()=>{
+          try{
+            const data = JSON.parse(r.result);
+            apply(data);
+            localStorage.setItem(KEY, JSON.stringify(data));
+            setStatus('Imported ✓');
+          }catch(err){ console.error(err); alert('Invalid JSON'); }
+        };
+        r.readAsText(f);
+      });
+
+      document.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.add-card');
+        if (!btn) return;
+        let container = document.querySelector(btn.dataset.target || '#cards-elementals');
+        if (!container){
+          container = document.createElement('div');
+          container.className = 'cards'; container.id = 'cards-elementals';
+          btn.insertAdjacentElement('afterend', container);
+        }
+        let template = document.getElementById('elemental-card-template');
+        if (!template){
+          template = document.createElement('template');
+          template.id = 'elemental-card-template';
+          template.innerHTML = document.getElementById('elemental-card-template').innerHTML;
+          document.body.appendChild(template);
+        }
+        const card = template.content.firstElementChild.cloneNode(true);
+        wireCard(card);
+        container.appendChild(card);
+        card.scrollIntoView({behavior:'smooth', block:'center'});
+        autosave();
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
