@@ -14,6 +14,7 @@
       <div class="tag">The Elemental protectors of the world</div>
     </header>
 
+    <!-- Nav (be sure to add Elementals link on your other pages too) -->
     <nav class="nav-bar">
       <a href="index.html" class="btn">Home</a>
       <a href="imps.html" class="btn">Imps</a>
@@ -25,55 +26,91 @@
     </nav>
 
     <section>
-      <h2 class="logo">The Elementals</h2>
+      <h2 class="logo">Elementals</h2>
       <p style="margin-top:12px">
         Elementals are beings of many shapes and sizes. They are able to form almost any shape given the limitations of their element. 
         For example, fire can't separate from its fuel source and float freely upon the air. Since elementals are made of energy their bodies 
         are made of the element in which they exist and therefore exhibit the properties of those elements.
       </p>
 
+      <!-- One action bar + one large-card grid -->
       <div class="actions">
         <button class="add-card" data-target="#cards-elementals">+ Add Elemental</button>
       </div>
 
       <div class="cards" id="cards-elementals">
+        <!-- Optional starters (remove any you don’t want) -->
         <div class="card">
-          <button class="remove-card" title="Remove this form">×</button>
+          <button class="remove-card" title="Remove">×</button>
           <div class="image" title="Click to upload or drop an image">
             Image <input type="file" accept="image/*">
           </div>
-          <div class="name" contenteditable="true">Form Name (e.g., Infernal Blaze)</div>
-          <div class="desc" contenteditable="true">Element: Fire — Describe abilities, strengths, weaknesses, and visuals.</div>
+          <div class="name" contenteditable="true">Fire Elemental</div>
+          <div class="desc" contenteditable="true">Inferno-wreathed spirit. Strengths: burn/DoT, area denial. Weaknesses: water, cold.</div>
+        </div>
+        <div class="card">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="name" contenteditable="true">Water Elemental</div>
+          <div class="desc" contenteditable="true">Shape-shifting tide. Strengths: crowd control, flow. Weaknesses: lightning, freeze.</div>
+        </div>
+        <div class="card">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="name" contenteditable="true">Air Elemental</div>
+          <div class="desc" contenteditable="true">Razor wind and cyclone. Strengths: speed, knockback. Weaknesses: earth, grounding.</div>
+        </div>
+        <div class="card">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="name" contenteditable="true">Earth Elemental</div>
+          <div class="desc" contenteditable="true">Stone and soil titan. Strengths: defense, stuns. Weaknesses: air, erosion.</div>
+        </div>
+        <div class="card">
+          <button class="remove-card" title="Remove">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="name" contenteditable="true">Darkness Elemental</div>
+          <div class="desc" contenteditable="true">Shadowed malice. Strengths: debuffs, concealment. Weaknesses: radiant/holy effects.</div>
         </div>
       </div>
     </section>
 
-    <template id="elementals-card-template">
+    <!-- Template for new Elementals -->
+    <template id="elemental-card-template">
       <div class="card">
-        <button class="remove-card" title="Remove this form">×</button>
+        <button class="remove-card" title="Remove">×</button>
         <div class="image" title="Click to upload or drop an image">
           Image <input type="file" accept="image/*">
         </div>
-        <div class="name" contenteditable="true">Form Name</div>
+        <div class="name" contenteditable="true">Elemental Name</div>
         <div class="desc" contenteditable="true">Element: (Fire/Water/Air/Earth/Darkness) — description...</div>
       </div>
     </template>
 
-                <footer class="footer">
-                  <div>Follow: Discord • Twitter • Steam • itch.io</div>
-                </footer>
-              </main>
-              <script src="script.js"></script>
-            </body>
-            </html>
+    <footer class="footer">
+      <div>Follow: Discord • Twitter • Steam • itch.io</div>
+    </footer>
+  </main>
 
+  <!-- Your global autosave/handlers -->
+  <script src="script.js"></script>
+
+  <!-- Page-scoped add-elemental logic (uses the same helpers as demons/imp) -->
   <script>
   document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
       const btn = e.target.closest('.add-card');
       if (!btn) return;
 
-      // Find/ensure our single container
+      // target container
       let container = document.querySelector(btn.dataset.target || '#cards-elementals');
       if (!container) {
         container = document.createElement('div');
@@ -82,24 +119,24 @@
         btn.insertAdjacentElement('afterend', container);
       }
 
-      // Template
-      let template = document.getElementById('elementals-card-template');
+      // template
+      let template = document.getElementById('elemental-card-template');
       if (!template) {
         template = document.createElement('template');
-        template.id = 'elementals-card-template';
+        template.id = 'elemental-card-template';
         template.innerHTML = `
           <div class="card">
-            <button class="remove-card" title="Remove this form">×</button>
+            <button class="remove-card" title="Remove">×</button>
             <div class="image" title="Click to upload or drop an image">
               Image <input type="file" accept="image/*">
             </div>
-            <div class="name" contenteditable="true">Form Name</div>
+            <div class="name" contenteditable="true">Elemental Name</div>
             <div class="desc" contenteditable="true">Element: (Fire/Water/Air/Earth/Darkness) — description...</div>
           </div>`;
         document.body.appendChild(template);
       }
 
-      // Helpers from your main script (fallbacks if needed)
+      // helpers from global script (fallbacks)
       const fileToDataURL = window.fileToDataURL || (f => new Promise(r => { const rd = new FileReader(); rd.onload = () => r(rd.result); rd.readAsDataURL(f); }));
       const setBoxImage = window.setBoxImage || ((box, src) => {
         if (!src) return;
@@ -142,37 +179,27 @@
       autosave();
     });
 
-    // Wire existing example card for uploads + autosave
-    (function wireExisting(){
-      const container = document.getElementById('cards-elementals');
-      if (!container) return;
-      container.querySelectorAll('.card').forEach(card => {
-        if (card.dataset.wired) return;
-        card.dataset.wired = '1';
-
-        // remove
-        card.querySelector('.remove-card')?.addEventListener('click', ()=>{ card.remove(); (window.autosave||(()=>{}))(); });
-
-        // text
-        card.querySelectorAll('[contenteditable="true"]').forEach(el=>{
-          el.addEventListener('input', window.autosave||(()=>{}));
-          el.addEventListener('blur', window.autosave||(()=>{}));
-        });
-
-        // image
-        const box = card.querySelector('.image');
-        const input = box?.querySelector('input[type="file"]');
-        if (input){
-          input.addEventListener('change', async e=>{
-            const f = e.target.files?.[0]; if(!f) return;
-            (window.setBoxImage||((b,s)=>{ const i=b.querySelector('input[type=file]'); b.style.backgroundImage=`url(${s})`; b.classList.add('has-img'); b.textContent=''; if(i)b.appendChild(i);}))(box,
-              await (window.fileToDataURL||(f=>new Promise(r=>{const rd=new FileReader(); rd.onload=()=>r(rd.result); rd.readAsDataURL(f);})))(f)
-            );
-            (window.autosave||(()=>{}))();
-          });
-        }
+    // Wire starters (so uploads & remove work immediately)
+    document.querySelectorAll('#cards-elementals .card').forEach(card => {
+      if (card.dataset.wired) return;
+      card.dataset.wired = '1';
+      card.querySelector('.remove-card')?.addEventListener('click', ()=>{ card.remove(); (window.autosave||(()=>{}))(); });
+      card.querySelectorAll('[contenteditable="true"]').forEach(el=>{
+        el.addEventListener('input', window.autosave||(()=>{}));
+        el.addEventListener('blur', window.autosave||(()=>{}));
       });
-    })();
+      const box = card.querySelector('.image');
+      const input = box?.querySelector('input[type="file"]');
+      if (input){
+        input.addEventListener('change', async e=>{
+          const f = e.target.files?.[0]; if(!f) return;
+          (window.setBoxImage||((b,s)=>{ const i=b.querySelector('input[type=file]'); b.style.backgroundImage=`url(${s})`; b.classList.add('has-img'); b.textContent=''; if(i)b.appendChild(i);}))(box,
+            await (window.fileToDataURL||(f=>new Promise(r=>{const rd=new FileReader(); rd.onload=()=>r(rd.result); rd.readAsDataURL(f);})))(f)
+          );
+          (window.autosave||(()=>{}))();
+        });
+      }
+    });
   });
   </script>
 </body>
