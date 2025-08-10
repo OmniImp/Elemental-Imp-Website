@@ -179,3 +179,31 @@ body{
 .card .image.has-img, .level-card .img.has-img{
   border-style:solid; border-color: rgba(255,180,120,0.35);
 }
+
+/* --- Element badges + tints --- */
+.badges { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 6px; }
+.badge {
+  cursor:pointer; user-select:none;
+  border:1px solid rgba(255,120,30,0.28);
+  padding:6px 10px; border-radius:999px;
+  font-size:.9rem; letter-spacing:.2px; text-decoration:none;
+  background:linear-gradient(180deg, rgba(255,140,0,0.12), rgba(255,69,0,0.08));
+  color:var(--accent2);
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .2s ease;
+}
+.badge:hover { transform: translateY(-1px); box-shadow: var(--glow); }
+.badge.active { border-color: rgba(255,190,120,0.65); color:#fff7e6; box-shadow: 0 0 12px rgba(255,120,40,.6) inset; }
+
+/* Card tints based on selection */
+.card.el--fire    { box-shadow: 0 0 22px rgba(255, 80, 20, .35); }
+.card.el--water   { box-shadow: 0 0 22px rgba( 80,160,255, .30); }
+.card.el--air     { box-shadow: 0 0 22px rgba(180,220,255, .28); }
+.card.el--earth   { box-shadow: 0 0 22px rgba(120, 85, 40, .35); }
+.card.el--dark    { box-shadow: 0 0 22px rgba( 40, 10, 60, .40); }
+
+/* Optional: tint image border when selected */
+.card.el--fire  .image   { border-color: rgba(255,120,40,.45); }
+.card.el--water .image   { border-color: rgba(80,160,255,.45); }
+.card.el--air   .image   { border-color: rgba(180,220,255,.45); }
+.card.el--earth .image   { border-color: rgba(120, 85, 40,.45); }
+.card.el--dark  .image   { border-color: rgba( 60, 20, 90,.50); }
