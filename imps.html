@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Elemental Imp - Imps</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Flame overlay (theme effect) -->
+  <div class="flame" aria-hidden="true"></div>
+
+  <main class="container">
+    <header class="header center">
+      <div class="logo">🔥 ELEMENTAL IMP 🔥</div>
+      <div class="tag">The Imp who bends the elements</div>
+    </header>
+
+    <nav class="nav-bar">
+      <a href="index.html" class="btn">Home</a>
+      <a href="imps.html" class="btn">Imps</a>
+      <a href="levels-of-hell.html" class="btn">Levels of Hell</a>
+      <a href="elementals.html" class="btn">Elementals</a>
+      <a href="bestiary.html" class="btn">Bestiary</a>
+      <a href="media.html" class="btn">Media</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
+
+    <section>
+      <h2 class="logo">Main Character — The Imp</h2>
+      <p style="margin-top:12px">
+        The Imp can shift elemental forms: <strong>Fire, Water, Air, Earth, Darkness</strong>.
+        Use the button below to add new forms, upload art, and write notes.
+      </p>
+
+      <!-- Optional save controls (styled by your theme if present) -->
+      <div class="controls">
+        <button class="btn" id="save-now">Save Now</button>
+        <button class="btn" id="export-json">Export JSON</button>
+        <label class="btn" for="import-json">Import JSON</label>
+        <input id="import-json" type="file" accept="application/json" style="display:none">
+        <button class="btn" id="reset-page">Reset</button>
+        <span class="status-chip" id="save-status" aria-live="polite"></span>
+      </div>
+
+      <div class="actions">
+        <button class="add-card" id="add-imp" data-target="#cards-imp">+ Add Imp</button>
+      </div>
+
+      <!-- Card grid -->
+      <div class="cards" id="cards-imp">
+        <div class="card">
+          <button class="remove-card" title="Remove this form">×</button>
+          <div class="image" title="Click to upload or drop an image">
+            Image <input type="file" accept="image/*">
+          </div>
+          <div class="name" contenteditable="true">Form Name (e.g., Infernal Blaze)</div>
+          <div class="desc" contenteditable="true">Element: Fire — Describe abilities, strengths, weaknesses, and visuals.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Template used for new cards -->
+    <template id="imp-card-template">
+      <div class="card">
+        <button class="remove-card" title="Remove this form">×</button>
+        <div class="image" title="Click to upload or drop an image">
+          Image <input type="file" accept="image/*">
+        </div>
+        <div class="name" contenteditable="true">Form Name</div>
+        <div class="desc" contenteditable="true">Element: (Fire/Water/Air/Earth/Darkness) — description...</div>
+      </div>
+    </template>
+
+    <footer class="footer">
+      <div>Follow: Discord • Twitter • Steam • itch.io</div>
+    </footer>
+  </main>
+
+  <!-- Single script: autosave + rebuild cards + add/remove + drag/drop + image compression + double-handler guard -->
+  <script>
+  (function () {
+    const here = (location.pathname.split('/').pop() || 'imps.html').toLowerCase();
+    const KEY = 'elementalImp:' + here;
+    const MAX_IMG_DIM = 900;   // downscale to fit within 900px square
+    const IMG_QUALITY = 0.82;  // compression quality
+
+    // Helpers
+    function $(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
+    function setStatus(msg){ const s = document.getElementById('save-status'); if (s) s.textContent = msg; }
+    function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
+
+    function fileToDataURL(file){
+      return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); });
+    }
+
+    // Resize/compress large images before saving to avoid localStorage quota errors
+    async function compressDataURL(dataURL, maxDim=MAX_IMG_DIM, quality=IMG_QUALITY){
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          let { width:w, height:h } = img;
+          const scale = Math.min(1, maxDim / Math.max(w, h));
+          const nw = Math.max(1, Math.round(w * scale));
+          const nh = Math.max(1, Math.round(h * scale));
+          const canvas = document.createElement('canvas');
+          canvas.width = nw; canvas.height = nh;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, nw, nh);
+          let out;
+          try { out = canvas.toDataURL('image/webp', quality); }
+          catch(e){ out = canvas.toDataURL('image/jpeg', quality); }
+          resolve(out);
+        };
+        img.src = dataURL;
+      });
+    }
+
+    async function fileToCompressedDataURL(file){
+      const raw = await fileToDataURL(file);
+      return await compressDataURL(raw);
+    }
+
+    function getBoxImage(box){
+      const bg = (box?.style?.backgroundImage) || '';
+      const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
+      return m ? m[2] : '';
+    }
+    function setBoxImage(box, src){
+      if(!src) return;
+      const input = box.querySelector('input[type="file"]');
+      box.style.backgroundImage = `url(${src})`;
+      box.classList.add('has-img');
+      box.textContent = '';
+      if (input) box.appendChild(input);
+    }
+
+    // Wire a card
+    function wireImageBox(box){
+      const input = box?.querySelector('input[type="file"]');
+      if (input && !input.dataset.wired){
+        input.dataset.wired = '1';
+        input.addEventListener('change', async e=>{
+          const f = e.target.files?.[0]; if(!f) return;
+          const dataURL = await fileToCompressedDataURL(f);
+          setBoxImage(box, dataURL);
+          autosave();
+        });
+      }
+      ['dragenter','dragover'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
+      ['dragleave','drop'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
+      box?.addEventListener('drop', async e=>{
+        const f = e.dataTransfer?.files?.[0]; if(!f) return;
+        const dataURL = await fileToCompressedDataURL(f);
+        setBoxImage(box, dataURL);
+        autosave();
+      });
+    }
+    function wireCard(card){
+      if (card.dataset.wired) return;
+      card.dataset.wired = '1';
+      card.querySelector('.remove-card')?.addEventListener('click', ()=>{ card.remove(); autosave(); });
+      card.querySelectorAll('[contenteditable="true"]').forEach(el=>{
+        el.addEventListener('input', autosave);
+        el.addEventListener('blur', autosave);
+      });
+      wireImageBox(card.querySelector('.image'));
+    }
+
+    // Persist full list of cards
+    async function collect(){
+      const cards = $('#cards-imp .card').map(card => ({
+        name: (card.querySelector('.name')?.textContent || '').trim(),
+        desc: (card.querySelector('.desc')?.textContent || '').trim(),
+        img:  getBoxImage(card.querySelector('.image'))
+      }));
+      return { page: here, cards };
+    }
+
+    function apply(data){
+      if (!data || data.page !== here) return;
+      const wrap = document.getElementById('cards-imp');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+
+      let template = document.getElementById('imp-card-template');
+      if (!template){
+        template = document.createElement('template');
+        template.id = 'imp-card-template';
+        template.innerHTML = document.getElementById('imp-card-template').innerHTML;
+        document.body.appendChild(template);
+      }
+
+      (data.cards || []).forEach(c => {
+        const card = template.content.firstElementChild.cloneNode(true);
+        card.querySelector('.name').textContent = c.name || 'Form Name';
+        card.querySelector('.desc').textContent = c.desc || 'Element: ...';
+        if (c.img) setBoxImage(card.querySelector('.image'), c.img);
+        wireCard(card);
+        wrap.appendChild(card);
+      });
+      setStatus('Loaded');
+    }
+
+    async function saveNow(){
+      try{ localStorage.setItem(KEY, JSON.stringify(await collect())); setStatus('Saved ✓'); }
+      catch(e){ console.error(e); alert('Save failed — likely image size exceeded browser storage. I’ll compress more.'); }
+    }
+    function loadNow(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return false;
+        apply(JSON.parse(raw));
+        return true;
+      }catch(e){ console.error(e); return false; }
+    }
+    const autosave = debounce(() => { collect().then(data => {
+      try{ localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }
+      catch(e){ console.error(e); setStatus('Save failed'); }
+    }); }, 400);
+
+    // Boot
+    document.addEventListener('DOMContentLoaded', () => {
+      // nav highlight
+      document.querySelectorAll('.nav-bar .btn').forEach(a=>{
+        if((a.getAttribute('href')||'').toLowerCase()==='imps.html') a.classList.add('active');
+      });
+
+      // Try to restore; if nothing saved, wire the starter card
+      const hadSaved = loadNow();
+      if (!hadSaved){
+        document.querySelectorAll('#cards-imp .card').forEach(wireCard);
+      }
+
+      // Controls
+      document.getElementById('save-now')?.addEventListener('click', saveNow);
+      document.getElementById('reset-page')?.addEventListener('click', ()=>{
+        if (confirm('Reset this page and clear saved data?')){ localStorage.removeItem(KEY); location.reload(); }
+      });
+      document.getElementById('export-json')?.addEventListener('click', async ()=>{
+        const data = await collect();
+        const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'imps-export.json';
+        a.click();
+        setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
+      });
+      document.getElementById('import-json')?.addEventListener('change', e=>{
+        const f = e.target.files?.[0]; if(!f) return;
+        const r = new FileReader();
+        r.onload = ()=>{
+          try{ const data = JSON.parse(r.result); apply(data); localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Imported ✓'); }
+          catch(err){ console.error(err); alert('Invalid JSON.'); }
+        };
+        r.readAsText(f);
+      });
+
+      // + Add Imp — bind directly to the button and stop propagation
+      const addBtn = document.getElementById('add-imp');
+      if (addBtn && !window.__impsAddHandlerInstalled){
+        window.__impsAddHandlerInstalled = true;
+        addBtn.addEventListener('click', (e)=>{
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+
+          let container = document.querySelector(addBtn.dataset.target || '#cards-imp');
+          if (!container){
+            container = document.createElement('div');
+            container.className = 'cards'; container.id = 'cards-imp';
+            addBtn.insertAdjacentElement('afterend', container);
+          }
+          let template = document.getElementById('imp-card-template');
+          if (!template){
+            template = document.createElement('template');
+            template.id = 'imp-card-template';
+            template.innerHTML = document.getElementById('imp-card-template').innerHTML;
+            document.body.appendChild(template);
+          }
+          const card = template.content.firstElementChild.cloneNode(true);
+          wireCard(card);
+          container.appendChild(card);
+          card.scrollIntoView({ behavior:'smooth', block:'center' });
+          autosave();
+        });
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
