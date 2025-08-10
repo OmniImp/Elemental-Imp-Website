@@ -84,16 +84,27 @@
     </section>
 
     <!-- Template for new Elementals -->
-    <template id="elemental-card-template">
-      <div class="card">
-        <button class="remove-card" title="Remove">×</button>
-        <div class="image" title="Click to upload or drop an image">
-          Image <input type="file" accept="image/*">
-        </div>
-        <div class="name" contenteditable="true">Elemental Name</div>
-        <div class="desc" contenteditable="true">Element: (Fire/Water/Air/Earth/Darkness) — description...</div>
-      </div>
-    </template>
+<template id="elemental-card-template">
+  <div class="card">
+    <button class="remove-card" title="Remove">×</button>
+    <div class="image" title="Click to upload or drop an image">
+      Image <input type="file" accept="image/*">
+    </div>
+
+    <div class="badges" role="group" aria-label="Element">
+      <button class="badge" data-el="fire">Fire</button>
+      <button class="badge" data-el="water">Water</button>
+      <button class="badge" data-el="air">Air</button>
+      <button class="badge" data-el="earth">Earth</button>
+      <button class="badge" data-el="dark">Darkness</button>
+    </div>
+    <span class="element-value" contenteditable="true" style="display:none;">fire</span>
+
+    <div class="name" contenteditable="true">Elemental Name</div>
+    <div class="desc" contenteditable="true">Element: (Fire/Water/Air/Earth/Darkness) — description...</div>
+  </div>
+</template>
+
 
     <footer class="footer">
       <div>Follow: Discord • Twitter • Steam • itch.io</div>
