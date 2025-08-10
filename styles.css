@@ -61,12 +61,6 @@ body{
 }
 .btn:hover{transform:translateY(-3px);filter:brightness(1.05)}
 
-/* Features */
-.features{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:24px}
-.feature-card{background:var(--card);padding:18px;border-radius:10px;border:1px solid rgba(255,100,10,0.06)}
-.feature-card h4{font-family:'Press Start 2P',monospace;color:var(--accent2);font-size:14px;margin-bottom:6px}
-.feature-card p{font-size:13px;color:#ffd7b3}
-
 /* Progression */
 .progressions{margin-top:26px;background:linear-gradient(180deg, rgba(0,0,0,0.15), transparent);padding:12px;border-radius:8px}
 .levels{display:flex;gap:12px;justify-content:space-between;margin-top:8px}
@@ -87,7 +81,6 @@ body{
 
 /* Responsive */
 @media (max-width:800px){
-  .features{grid-template-columns:1fr}
   .bestiary{grid-template-columns:repeat(2,1fr)}
   .logo{font-size:26px}
 }
