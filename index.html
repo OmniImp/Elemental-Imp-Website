@@ -5,6 +5,103 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Elemental Imp - Home</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ---- Home page scoped styles (safe to move into styles.css later) ---- */
+    .hero {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: clamp(380px, 55vh, 620px);
+      text-align: center;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(255,120,40,.12), transparent 60%);
+      pointer-events: none;
+    }
+    .hero__title { font-size: clamp(2rem, 6vw, 3.5rem); }
+    .hero__tag { opacity:.9; margin-top:.5rem; }
+    .hero__cta { margin-top: 1.25rem; display:flex; gap:.75rem; justify-content:center; }
+    .btn--glow { box-shadow: 0 0 22px rgba(255,100,20,.35); }
+    .btn--ghost { background: transparent; border: 1px solid rgba(255,120,30,.35); }
+
+    .imp-teaser {
+      display:grid; gap:20px; align-items:center;
+      grid-template-columns: 1.1fr 1fr;
+      margin-top: 28px;
+    }
+    .imp-teaser__img { width:100%; height:auto; image-rendering: pixelated; }
+    .muted { opacity:.85; }
+    .section-title { font-size: clamp(1.2rem, 3vw, 1.6rem); margin-bottom: .6rem; }
+    @media (max-width: 900px){
+      .imp-teaser { grid-template-columns: 1fr; }
+    }
+
+    .elemental-preview { margin-top: 32px; }
+    .elemental-grid {
+      display:grid; gap:12px; margin-top: 10px;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+    }
+    @media (max-width:1100px){ .elemental-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width:700px){ .elemental-grid { grid-template-columns: repeat(2,1fr); } }
+
+    .elemental-card {
+      position:relative; display:flex; flex-direction:column; gap:10px; padding:12px;
+      border:1px solid rgba(255,120,30,.25); border-radius:12px; text-decoration:none;
+      background: linear-gradient(180deg, rgba(255,140,0,.08), rgba(30,0,0,.35));
+      transition: transform .15s ease, box-shadow .15s ease, border-color .2s ease;
+      color: inherit;
+    }
+    .elemental-card:hover { transform: translateY(-2px); box-shadow: var(--glow); border-color: rgba(255,200,120,.6); }
+    .elemental-card__art {
+      width:100%; aspect-ratio:1/1; border-radius:10px; border:1px solid rgba(255,120,30,.35);
+      background-size: cover; background-position:center; background-image: var(--el-art, linear-gradient(135deg, #222, #111));
+    }
+    .elemental-card__name { text-align:center; font-weight:700; }
+
+    .el-fire  { --el-art: radial-gradient(50% 50% at 50% 50%, rgba(255,80,20,.35), rgba(20,0,0,.6)); }
+    .el-water { --el-art: radial-gradient(50% 50% at 50% 50%, rgba(40,120,255,.35), rgba(0,10,30,.6)); }
+    .el-air   { --el-art: radial-gradient(50% 50% at 50% 50%, rgba(220,240,255,.45), rgba(5,15,25,.6)); }
+    .el-earth { --el-art: radial-gradient(50% 50% at 50% 50%, rgba(120,85,40,.4), rgba(20,10,0,.6)); }
+    .el-dark  { --el-art: radial-gradient(50% 50% at 50% 50%, rgba(60,20,90,.45), rgba(5,0,10,.7)); }
+
+    .bestiary-teaser { margin-top: 32px; }
+    .bestiary-teaser__head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .carousel {
+      position:relative; margin-top:12px; overflow:hidden; border-radius:14px;
+      border:1px solid rgba(255,120,30,.25);
+    }
+    .carousel__track {
+      display:flex; gap:10px; padding:10px; scroll-behavior:smooth;
+      overflow-x:auto; overscroll-behavior:contain; scrollbar-width:none;
+    }
+    .carousel__track::-webkit-scrollbar{ display:none; }
+    .slide {
+      flex: 0 0 min(280px, 80vw); display:flex; gap:10px; align-items:center;
+      padding:10px; border-radius:10px; text-decoration:none; color: inherit;
+      background: linear-gradient(180deg, rgba(255,140,0,.08), rgba(20,0,0,.35));
+      border:1px solid rgba(255,120,30,.25);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .2s ease;
+    }
+    .slide:hover { transform: translateY(-2px); box-shadow: var(--glow); border-color: rgba(255,200,120,.6); }
+    .slide__art { width:72px; aspect-ratio:1/1; border-radius:8px; border:1px solid rgba(255,120,30,.35);
+      background: radial-gradient(circle, rgba(255,80,20,.3), rgba(30,0,0,.7)); background-position:center; background-size:cover; }
+    .slide__meta { display:flex; flex-direction:column; }
+    .slide__name { font-weight:700; }
+    .slide__tier { opacity:.8; font-size:.95rem; }
+
+    .carousel__btn {
+      position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+      width:40px; height:40px; border-radius:50%;
+      display:grid; place-items:center; background:rgba(0,0,0,.5);
+      border:1px solid rgba(255,120,30,.35); color:#ffd7b0; cursor:pointer;
+    }
+    .carousel__btn:hover { box-shadow: var(--glow); }
+    .carousel__btn.prev { left:8px; }
+    .carousel__btn.next { right:8px; }
+  </style>
 </head>
 <body>
   <div class="flame" aria-hidden="true"></div>
@@ -13,25 +110,160 @@
       <div class="logo">🔥 ELEMENTAL IMP 🔥</div>
       <div class="tag">Descend the Nine Levels of Hell</div>
     </header>
-  
-<nav class="nav-bar">
-  <a href="index.html" class="btn">Home</a>
-  <a href="imps.html" class="btn">Imps</a>
-  <a href="levels-of-hell.html" class="btn">Levels of Hell</a>
-  <a href="elementals.html" class="btn">Elementals</a>
-  <a href="bestiary.html" class="btn">Bestiary</a>
-  <a href="media.html" class="btn">Media</a>
-  <a href="contact.html" class="btn">Contact</a>
-</nav>
 
-<section>
-<h2 class="logo">Home</h2>
-<div style="margin-top:12px"><p>Welcome to Elemental Imp — descending through nine levels of hell.</p></div>
-</section>
-<footer class="footer">
-<div>Follow: Discord • Twitter • Steam • itch.io</div>
-</footer>
-</main>
-<script src="script.js"></script>
+    <nav class="nav-bar">
+      <a href="index.html" class="btn">Home</a>
+      <a href="imps.html" class="btn">Imps</a>
+      <a href="levels-of-hell.html" class="btn">Levels of Hell</a>
+      <a href="elementals.html" class="btn">Elementals</a>
+      <a href="bestiary.html" class="btn">Bestiary</a>
+      <a href="media.html" class="btn">Media</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero__inner">
+        <h1 class="logo hero__title">🔥 ELEMENTAL IMP 🔥</h1>
+        <p class="hero__tag">The imp who bends the elements and walks between worlds.</p>
+        <div class="hero__cta">
+          <a href="imps.html" class="btn btn--glow">Start Adventure</a>
+          <button class="btn btn--ghost" id="ambient-toggle" aria-pressed="false">Ambience: Off</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEET THE IMP -->
+    <section class="imp-teaser">
+      <div class="imp-teaser__media">
+        <!-- Replace src with your Fire Imp GIF -->
+        <img src="media/fire-imp.gif" alt="Fire Imp animation" class="imp-teaser__img">
+      </div>
+      <div class="imp-teaser__copy">
+        <h2 class="section-title">Meet the Imp</h2>
+        <p class="muted">A mischievous wanderer who can shift forms between Fire, Water, Air, Earth, and Darkness. Each form unlocks new ways to survive the Nine Levels of Hell.</p>
+        <a href="imps.html" class="btn">See Forms</a>
+      </div>
+    </section>
+
+    <!-- ELEMENTAL CARDS PREVIEW -->
+    <section class="elemental-preview">
+      <h2 class="section-title">Elemental Realms</h2>
+      <div class="elemental-grid">
+        <a class="elemental-card el-fire" href="elementals.html">
+          <div class="elemental-card__art"></div>
+          <div class="elemental-card__name">Fire</div>
+        </a>
+        <a class="elemental-card el-water" href="elementals.html">
+          <div class="elemental-card__art"></div>
+          <div class="elemental-card__name">Water</div>
+        </a>
+        <a class="elemental-card el-air" href="elementals.html">
+          <div class="elemental-card__art"></div>
+          <div class="elemental-card__name">Air</div>
+        </a>
+        <a class="elemental-card el-earth" href="elementals.html">
+          <div class="elemental-card__art"></div>
+          <div class="elemental-card__name">Earth</div>
+        </a>
+        <a class="elemental-card el-dark" href="elementals.html">
+          <div class="elemental-card__art"></div>
+          <div class="elemental-card__name">Darkness</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- BESTIARY TEASER CAROUSEL -->
+    <section class="bestiary-teaser">
+      <div class="bestiary-teaser__head">
+        <h2 class="section-title">From the Bestiary</h2>
+        <a href="bestiary.html" class="btn btn--ghost">See Full Bestiary</a>
+      </div>
+      <div class="carousel" data-autoplay="true" data-interval="4500">
+        <button class="carousel__btn prev" aria-label="Previous">‹</button>
+        <div class="carousel__track">
+          <a class="slide" href="bestiary.html">
+            <div class="slide__art"></div>
+            <div class="slide__meta">
+              <div class="slide__name">Hell Crawler</div>
+              <div class="slide__tier">Fiend</div>
+            </div>
+          </a>
+          <a class="slide" href="bestiary.html">
+            <div class="slide__art"></div>
+            <div class="slide__meta">
+              <div class="slide__name">Ash Warden</div>
+              <div class="slide__tier">Lesser Demon</div>
+            </div>
+          </a>
+          <a class="slide" href="bestiary.html">
+            <div class="slide__art"></div>
+            <div class="slide__meta">
+              <div class="slide__name">Soot Revenant</div>
+              <div class="slide__tier">Mid-Demon</div>
+            </div>
+          </a>
+          <a class="slide" href="bestiary.html">
+            <div class="slide__art"></div>
+            <div class="slide__meta">
+              <div class="slide__name">Infernal Regent</div>
+              <div class="slide__tier">Greater Demon</div>
+            </div>
+          </a>
+        </div>
+        <button class="carousel__btn next" aria-label="Next">›</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>Follow: Discord • Twitter • Steam • itch.io</div>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Ambience toggle (hook up audio element later if you want music)
+    const ambientBtn = document.getElementById('ambient-toggle');
+    let ambientOn = false;
+    ambientBtn?.addEventListener('click', () => {
+      ambientOn = !ambientOn;
+      ambientBtn.setAttribute('aria-pressed', String(ambientOn));
+      ambientBtn.textContent = `Ambience: ${ambientOn ? 'On' : 'Off'}`;
+      // TODO: play/pause audio element here
+    });
+
+    // Carousel logic
+    document.querySelectorAll('.carousel').forEach(carousel => {
+      const track = carousel.querySelector('.carousel__track');
+      const prev  = carousel.querySelector('.carousel__btn.prev');
+      const next  = carousel.querySelector('.carousel__btn.next');
+      const interval = Number(carousel.dataset.interval || 4500);
+      let timer;
+
+      function toNext(){ track.scrollBy({ left: track.clientWidth * 0.9, behavior: 'smooth' }); }
+      function toPrev(){ track.scrollBy({ left: -track.clientWidth * 0.9, behavior: 'smooth' }); }
+
+      prev?.addEventListener('click', () => { toPrev(); restart(); });
+      next?.addEventListener('click', () => { toNext(); restart(); });
+
+      function start(){
+        if (carousel.dataset.autoplay === 'true') {
+          stop();
+          timer = setInterval(toNext, interval);
+        }
+      }
+      function stop(){ if (timer) clearInterval(timer); }
+      function restart(){ stop(); start(); }
+
+      carousel.addEventListener('mouseenter', stop);
+      carousel.addEventListener('mouseleave', start);
+      carousel.addEventListener('focusin', stop);
+      carousel.addEventListener('focusout', start);
+
+      start();
+    });
+  });
+  </script>
 </body>
 </html>
