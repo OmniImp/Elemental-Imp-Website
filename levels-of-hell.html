@@ -96,23 +96,30 @@
   function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
   function fileToDataURL(file){ return new Promise(res=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
 
-  // NEW: parse/set background-image safely
-  function getBoxImage(box){
-    const bg = (box.style && box.style.backgroundImage) || '';
-    // Expect formats like: url("...") OR url(...) OR possibly multiple layers
-    const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
-    return m ? m[2] : ''; // raw URL/dataURL only
-  }
-function setBoxImage(box, src){
-    if(!src) return;
-    box.style.backgroundImage = `url(${src})`;
-    box.classList.add('has-img');
+function getBoxImage(box){
+  if (!box) return '';
+  // Prefer the stored raw data (reliable for new/old cards)
+  const ds = box.getAttribute('data-src');
+  if (ds) return ds;
 
-    // Remove placeholder text, keep the file input
-    const fileInput = box.querySelector('input[type="file"]');
-    box.textContent = ''; // clears any text like "Image Placeholder"
-    if (fileInput) box.appendChild(fileInput);
-  }
+  // Fallback to background-image if present
+  const bg = (box.style && box.style.backgroundImage) || '';
+  const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
+  return m ? m[2] : '';
+}
+
+function setBoxImage(box, src){
+  if(!box || !src) return;
+  // Remember the raw image so collect() can always read it
+  box.setAttribute('data-src', src);
+
+  // Paint preview + keep the file input
+  const input = box.querySelector('input[type="file"]');
+  box.style.backgroundImage = `url(${src})`;
+  box.classList.add('has-img');
+  box.textContent = '';
+  if (input) box.appendChild(input);
+}
 
   // --- collect current state ---
   async function collect() {
