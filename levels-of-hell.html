@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Elemental Imp - Levels of Hell</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Page-scoped tweaks; safe to move */
+    .levels { display:grid; gap:14px; grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .level { padding:16px; border-radius:12px; border:1px solid rgba(255,120,30,.25); }
+    .level .image { aspect-ratio:16/9; border:1px solid rgba(255,120,30,.35); border-radius:10px; display:block; padding:.75rem; position:relative; overflow:hidden; }
+    .level .image input[type="file"]{ position:absolute; inset:auto auto 8px 8px; }
+    .level .name { font-weight:700; margin-top:8px; }
+    .level .desc { margin-top:6px; opacity:.95; }
+    @media (max-width:1100px){ .levels { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width:700px){ .levels { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
   <div class="flame" aria-hidden="true"></div>
@@ -15,66 +26,75 @@
     </header>
 
     <nav class="nav-bar">
-  <a href="index.html" class="btn">Home</a>
-  <a href="imps.html" class="btn">Imps</a>
-  <a href="levels-of-hell.html" class="btn">Levels of Hell</a>
-  <a href="elementals.html" class="btn">Elementals</a>
-  <a href="bestiary.html" class="btn">Bestiary</a>
-  <a href="media.html" class="btn">Media</a>
-  <a href="contact.html" class="btn">Contact</a>
-</nav>
+      <a href="index.html" class="btn">Home</a>
+      <a href="imps.html" class="btn">Imps</a>
+      <a href="levels-of-hell.html" class="btn">Levels of Hell</a>
+      <a href="elementals.html" class="btn">Elementals</a>
+      <a href="bestiary.html" class="btn">Bestiary</a>
+      <a href="media.html" class="btn">Media</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
 
     <section>
-      <h2 class="logo">Levels of Hell</h2>
-      <p style="margin-top:12px">Nine descending realms. Add names, descriptions, and artwork placeholders below.</p>
+      <h2 class="logo">The Nine Levels</h2>
+      <p style="margin-top:12px">Each level includes a name, a short description, and artwork. Your edits and images are saved automatically.</p>
 
-      <div class="levels-grid">
-        <!-- 1 to 9 level cards -->
-        <article class="level-card" id="level-1">
-  <h3>Level 1: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-2">
-  <h3>Level 2: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-3">
-  <h3>Level 3: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-4">
-  <h3>Level 4: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-5">
-  <h3>Level 5: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-6">
-  <h3>Level 6: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-7">
-  <h3>Level 7: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-8">
-  <h3>Level 8: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
-<article class="level-card" id="level-9">
-  <h3>Level 9: <span contenteditable="true" data-placeholder="Name...">Name</span></h3>
-  <p class="desc" contenteditable="true" data-placeholder="Description...">Description of this level goes here.</p>
-  <div class="img" title="Click to upload or drop an image" data-src="assets/placeholder.png">Image Placeholder (16:9)<input type="file" accept="image/*"></div>
-</article>
+      <div class="controls">
+        <button class="btn" id="save-now">Save Now</button>
+        <button class="btn" id="export-json">Export JSON</button>
+        <label class="btn" for="import-json">Import JSON</label>
+        <input id="import-json" type="file" accept="application/json" style="display:none">
+        <button class="btn" id="reset-page">Reset</button>
+        <span class="status-chip" id="save-status" aria-live="polite"></span>
+      </div>
+
+      <div class="levels" id="hell-levels">
+        <!-- 9 default levels -->
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level I — Limbo</div>
+          <div class="desc" contenteditable="true">A twilight plain where the lost wander without pain or hope.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level II — Lust</div>
+          <div class="desc" contenteditable="true">Tempestuous gales fling shadows in endless hunger.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level III — Gluttony</div>
+          <div class="desc" contenteditable="true">Sinks of putrid rain and ravenous pits.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level IV — Greed</div>
+          <div class="desc" contenteditable="true">Endless heaving of weight against weight in blinding glare.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level V — Wrath</div>
+          <div class="desc" contenteditable="true">A blood-warm swamp of choking fumes and fists.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level VI — Heresy</div>
+          <div class="desc" contenteditable="true">Iron tombs swing open to greet fresh flames.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level VII — Violence</div>
+          <div class="desc" contenteditable="true">Rivers of burning blood and groves of thorns.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level VIII — Fraud</div>
+          <div class="desc" contenteditable="true">Ten pits of trickery; honeyed voices, poisoned teeth.</div>
+        </div>
+        <div class="level">
+          <div class="image">Image <input type="file" accept="image/*"></div>
+          <div class="name" contenteditable="true">Level IX — Treachery</div>
+          <div class="desc" contenteditable="true">A frozen maw where betrayal sleeps under glass.</div>
+        </div>
       </div>
     </section>
 
@@ -82,154 +102,139 @@
       <div>Follow: Discord • Twitter • Steam • itch.io</div>
     </footer>
   </main>
-  <script src="script.js"></script>
 
-<script>
-/* Elemental Imp: Per-page autosave (fixed image save/restore) */
-(function () {
-  const here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const KEY = 'elementalImp:' + here;
+  <script>
+  (function(){
+    const here = (location.pathname.split('/').pop() || 'levels-of-hell.html').toLowerCase();
+    const KEY = 'elementalImp:' + here;
+    const MAX_IMG_DIM = 1000;
+    const IMG_QUALITY = 0.82;
 
-  // --- helpers ---
-  function $(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
-  function setStatus(msg){ const s = document.getElementById('save-status'); if (s) s.textContent = msg; }
-  function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t = setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
-  function fileToDataURL(file){ return new Promise(res=>{ const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
+    function $(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
+    function setStatus(msg){ const s = document.getElementById('save-status'); if (s) s.textContent = msg; }
+    function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); setStatus('Saving…'); }; }
 
-function getBoxImage(box){
-  if (!box) return '';
-  // Prefer the stored raw data (reliable for new/old cards)
-  const ds = box.getAttribute('data-src');
-  if (ds) return ds;
+    function fileToDataURL(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
+    async function compressDataURL(dataURL, maxDim=MAX_IMG_DIM, quality=IMG_QUALITY){
+      return new Promise((resolve)=>{
+        const img = new Image();
+        img.onload = ()=>{
+          const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          const w = Math.max(1, Math.round(img.width*scale));
+          const h = Math.max(1, Math.round(img.height*scale));
+          const c = document.createElement('canvas'); c.width=w; c.height=h;
+          const ctx = c.getContext('2d'); ctx.drawImage(img,0,0,w,h);
+          let out; try{ out=c.toDataURL('image/webp', quality);}catch(e){ out=c.toDataURL('image/jpeg', quality); }
+          resolve(out);
+        };
+        img.src = dataURL;
+      });
+    }
+    async function fileToCompressedDataURL(file){ return await compressDataURL(await fileToDataURL(file)); }
 
-  // Fallback to background-image if present
-  const bg = (box.style && box.style.backgroundImage) || '';
-  const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
-  return m ? m[2] : '';
-}
-
-function setBoxImage(box, src){
-  if(!box || !src) return;
-  // Remember the raw image so collect() can always read it
-  box.setAttribute('data-src', src);
-
-  // Paint preview + keep the file input
-  const input = box.querySelector('input[type="file"]');
-  box.style.backgroundImage = `url(${src})`;
-  box.classList.add('has-img');
-  box.textContent = '';
-  if (input) box.appendChild(input);
-}
-
-  // --- collect current state ---
-  async function collect() {
-    const textBlocks = $('[contenteditable="true"]').map(el => el.textContent.trim());
-    const imgBoxes  = $('.image, .img').map(getBoxImage); // raw dataURLs/URLs only
-    return { page: here, textBlocks, imgBoxes };
-  }
-
-  // --- apply saved state ---
-  function apply(data) {
-    if (!data || data.page !== here) return;
-    const textBlocks = $('[contenteditable="true"]');
-    (data.textBlocks || []).forEach((txt, i) => { if (textBlocks[i]) textBlocks[i].textContent = txt || textBlocks[i].textContent; });
-    const boxes = $('.image, .img');
-    (data.imgBoxes || []).forEach((src, i) => { if (boxes[i] && src) setBoxImage(boxes[i], src); });
-    setStatus('Loaded');
-  }
-
-  async function saveNow(){ try { localStorage.setItem(KEY, JSON.stringify(await collect())); setStatus('Saved ✓'); } catch(e){ console.error(e); setStatus('Save failed'); } }
-  function loadNow(){ try { const raw = localStorage.getItem(KEY); if (!raw) return; apply(JSON.parse(raw)); } catch(e){ console.error(e); } }
-  const autosave = debounce(() => { collect().then(data => { try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); } catch(e){ console.error(e); setStatus('Save failed'); } }); }, 400);
-
-  // --- wire up page ---
-  document.addEventListener('DOMContentLoaded', () => {
-    // (optional) highlight current nav
-    document.querySelectorAll('.nav-bar .btn').forEach(a => {
-      if ((a.getAttribute('href') || '').toLowerCase() === here) a.classList.add('active');
-    });
-
-    // controls bar (if you already have it, this is safe to keep or remove)
-    if (!document.querySelector('.controls')) {
-      const controls = document.createElement('div');
-      controls.className = 'controls';
-      controls.innerHTML = `
-        <button class="btn" id="save-now">Save Now</button>
-        <button class="btn" id="export-json">Export JSON</button>
-        <label class="btn" for="import-json">Import JSON</label>
-        <input id="import-json" type="file" accept="application/json" style="display:none">
-        <button class="btn" id="reset-page">Reset</button>
-        <span class="status-chip" id="save-status" aria-live="polite"></span>
-      `;
-      const main = document.querySelector('main') || document.body;
-      const h2 = main.querySelector('section h2');
-      (h2 && h2.parentElement) ? h2.parentElement.insertBefore(controls, h2.nextSibling) : main.prepend(controls);
+    function getBoxImage(box){
+      if (!box) return '';
+      const ds = box.getAttribute('data-src');
+      if (ds) return ds;
+      const bg = (box.style && box.style.backgroundImage) || '';
+      const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
+      return m ? m[2] : '';
+    }
+    function setBoxImage(box, src){
+      if(!box || !src) return;
+      box.setAttribute('data-src', src);
+      const input = box.querySelector('input[type="file"]');
+      box.style.backgroundImage = `url(${src})`; box.classList.add('has-img');
+      box.textContent = '';
+      if (input) box.appendChild(input);
     }
 
-    // restore
-    loadNow();
-
-    // autosave text
-    $('[contenteditable="true"]').forEach(el => {
-      el.addEventListener('input', autosave);
-      el.addEventListener('blur', autosave);
-    });
-
-    // autosave images (file input + drag/drop)
-    $('.image input[type="file"], .img input[type="file"]').forEach(inp => {
-      const box = inp.closest('.image, .img');
-      if (!box) return;
-      inp.addEventListener('change', async e => {
-        const f = e.target.files && e.target.files[0];
-        if (!f) return;
-        const dataURL = await fileToDataURL(f);
-        setBoxImage(box, dataURL);
-        autosave();
-      });
-      ['dragenter','dragover'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
-      ['dragleave','drop'].forEach(ev=> box.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
-      box.addEventListener('drop', async e => {
-        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        if (!f) return;
-        const dataURL = await fileToDataURL(f);
-        setBoxImage(box, dataURL);
-        autosave();
-      });
-    });
-
-    // controls
-    document.getElementById('save-now')?.addEventListener('click', saveNow);
-    document.getElementById('reset-page')?.addEventListener('click', () => {
-      if (confirm('Reset this page and clear saved data?')) {
-        localStorage.removeItem(KEY);
-        location.reload();
+    function wireImageBox(box){
+      const input = box?.querySelector('input[type="file"]');
+      if (input && !input.dataset.wired){
+        input.dataset.wired = '1';
+        input.addEventListener('change', async e=>{
+          const f = e.target.files?.[0]; if(!f) return;
+          setBoxImage(box, await fileToCompressedDataURL(f));
+          autosave();
+        });
       }
+      ['dragenter','dragover'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow='0 0 18px rgba(255,69,0,.85)'; }));
+      ['dragleave','drop'].forEach(ev=> box?.addEventListener(ev, e=>{ e.preventDefault(); box.style.boxShadow=''; }));
+      box?.addEventListener('drop', async e=>{
+        const f = e.dataTransfer?.files?.[0]; if(!f) return;
+        setBoxImage(box, await fileToCompressedDataURL(f));
+        autosave();
+      });
+    }
+
+    async function collect(){
+      const levels = $('#hell-levels .level').map(level => ({
+        name: (level.querySelector('.name')?.textContent || '').trim(),
+        desc: (level.querySelector('.desc')?.textContent || '').trim(),
+        img:  getBoxImage(level.querySelector('.image'))
+      }));
+      return { page: here, levels };
+    }
+    function apply(data){
+      if (!data || data.page !== here) return;
+      const wrap = document.getElementById('hell-levels');
+      if (!wrap) return;
+      const cells = wrap.querySelectorAll('.level');
+      (data.levels || []).forEach((lv, i)=>{
+        const card = cells[i];
+        if (!card) return;
+        card.querySelector('.name').textContent = lv.name || card.querySelector('.name').textContent;
+        card.querySelector('.desc').textContent = lv.desc || card.querySelector('.desc').textContent;
+        if (lv.img){ setBoxImage(card.querySelector('.image'), lv.img); }
+      });
+      setStatus('Loaded');
+    }
+
+    async function saveNow(){ try{ localStorage.setItem(KEY, JSON.stringify(await collect())); setStatus('Saved ✓'); }catch(e){ console.error(e); alert('Save failed (storage quota). Try smaller images.'); } }
+    function loadNow(){ try{ const raw=localStorage.getItem(KEY); if(!raw) return false; apply(JSON.parse(raw)); return true; }catch(e){ console.error(e); return false; } }
+    const autosave = debounce(() => { collect().then(data => { try{ localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }catch(e){ console.error(e); setStatus('Save failed'); } }); }, 400);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // nav highlight
+      document.querySelectorAll('.nav-bar .btn').forEach(a=>{ if((a.getAttribute('href')||'').toLowerCase()==='levels-of-hell.html') a.classList.add('active'); });
+
+      // wire image boxes
+      document.querySelectorAll('#hell-levels .image').forEach(wireImageBox);
+
+      // text autosave
+      document.querySelectorAll('#hell-levels [contenteditable="true"]').forEach(el=>{
+        el.addEventListener('input', autosave);
+        el.addEventListener('blur', autosave);
+      });
+
+      // load saved
+      const hadSaved = loadNow();
+      if (!hadSaved){
+        // ensure listeners still attached for fresh page
+        document.querySelectorAll('#hell-levels .image').forEach(wireImageBox);
+      }
+
+      // controls
+      document.getElementById('save-now')?.addEventListener('click', saveNow);
+      document.getElementById('reset-page')?.addEventListener('click', ()=>{
+        if (confirm('Reset this page and clear saved data?')){ localStorage.removeItem(KEY); location.reload(); }
+      });
+      document.getElementById('export-json')?.addEventListener('click', async ()=>{
+        const data = await collect();
+        const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'levels-of-hell-export.json'; a.click();
+        setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
+      });
+      document.getElementById('import-json')?.addEventListener('change', e=>{
+        const f = e.target.files?.[0]; if(!f) return;
+        const r = new FileReader(); r.onload = ()=>{
+          try{ const data = JSON.parse(r.result); apply(data); localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Imported ✓'); }
+          catch(err){ alert('Invalid JSON'); }
+        }; r.readAsText(f);
+      });
     });
-    document.getElementById('export-json')?.addEventListener('click', async () => {
-      const data = await collect();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = (here.replace(/\.html$/,'') || 'page') + '-export.json';
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    });
-    document.getElementById('import-json')?.addEventListener('change', e => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = () => {
-        try {
-          const data = JSON.parse(r.result);
-          apply(data);
-          localStorage.setItem(KEY, JSON.stringify(data));
-          setStatus('Imported ✓');
-        } catch (err) { console.error(err); alert('Invalid JSON.'); }
-      };
-      r.readAsText(file);
-    });
-  });
-})();
-</script>
+  })();
+  </script>
 </body>
 </html>
