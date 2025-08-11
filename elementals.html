@@ -80,6 +80,7 @@
     const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
     return m ? m[2] : '';
   }
+  
   function setBoxImage(box, src){
     if(!box || !src) return;
     box.setAttribute('data-src', src);
