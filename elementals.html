@@ -69,7 +69,9 @@
 
   function $(sel, ctx=document){ return Array.from(ctx.querySelectorAll(sel)); }
   function debounce(fn, ms=400){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); }; }
-  function fileToDataURL(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); }
+  function fileToDataURL(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); 
+  }
+  
   function getBoxImage(box){
     if (!box) return '';
     const ds = box.getAttribute('data-src');
