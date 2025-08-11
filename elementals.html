@@ -303,7 +303,7 @@
         const data = JSON.parse(raw);
         apply(data);
         return true;
-      }catch(e){ console.error(e); return False; }
+      }catch(e){ console.error(e); return false; }
     }
     const autosave = debounce(() => { collect().then(data => {
       try{ localStorage.setItem(KEY, JSON.stringify(data)); setStatus('Saved ✓'); }
