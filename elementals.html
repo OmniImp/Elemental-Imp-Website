@@ -72,24 +72,30 @@
   function fileToDataURL(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(file); }); 
   }
   
-  function getBoxImage(box){
-    if (!box) return '';
-    const ds = box.getAttribute('data-src');
-    if (ds) return ds;
-    const bg = (box.style && box.style.backgroundImage) || '';
-    const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
-    return m ? m[2] : '';
-  }
-  
-  function setBoxImage(box, src){
-    if(!box || !src) return;
-    box.setAttribute('data-src', src);
-    const input = box.querySelector('input[type="file"]');
-    box.style.backgroundImage = `url(${src})`;
-    box.classList.add('has-img');
-    box.textContent = '';
-    if (input) box.appendChild(input);
-  }
+function getBoxImage(box){
+  if (!box) return '';
+  // Prefer the data attribute (always present after we set an image)
+  const ds = box.getAttribute('data-src');
+  if (ds) return ds;
+
+  // Fallback to reading background-image
+  const bg = (box.style && box.style.backgroundImage) || '';
+  const m = bg.match(/url\((['"]?)(.*?)\1\)/i);
+  return m ? m[2] : '';
+}
+
+function setBoxImage(box, src){
+  if(!src || !box) return;
+  // Save the raw data for reliable autosave
+  box.setAttribute('data-src', src);
+
+  // Paint preview
+  const input = box.querySelector('input[type="file"]');
+  box.style.backgroundImage = `url(${src})`;
+  box.classList.add('has-img');
+  box.textContent = '';
+  if (input) box.appendChild(input);
+}
 
   async function collect(){
     const textBlocks = $('[contenteditable="true"]').map(el => el.textContent.trim());
